@@ -1,4 +1,5 @@
-from .random_image_loader import AITEC_random_image_loader
-from .sequential_image_loader import AITEC_sequential_image_loader
+from .random_image_loader import RandomImageLoader
+from .sequential_image_loader import SequentialImageLoader
+from .custom_string_mergeNode import CustomStringMergeNode
 
-__all__ = ["AITEC_random_image_loader", "AITEC_sequential_image_loader"]
+__all__ = ["RandomImageLoader", "SequentialImageLoader","CustomStringMergeNode"]
