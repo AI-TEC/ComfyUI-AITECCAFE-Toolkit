@@ -8,4 +8,4 @@ Custom nodes for ComfyUI to load images from a folder.
 ## Installation
 1. Clone this repository into `custom_nodes`:
    ```bash
-   git clone https://github.com/yourusername/ComfyUI_AITEC_ImageLoaders.git
+   git clone https://github.com/AI-TEC/ComfyUI-AITECCAFE-Node.git
