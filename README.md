@@ -7,7 +7,7 @@
 1. ComfyUIの `custom_nodes` フォルダに移動します。
 2. 以下のコマンドを使用して、このリポジトリをクローンします。
    ```bash
-   git clone https://github.com/YOUR_USERNAME/ComfyUI-AITECCAFE-Toolkit.git
+   git clone https://github.com/AI-TEC/ComfyUI-AITECCAFE-Toolkit
    ```
 3. 必要な依存関係をインストールします。
    ```bash
