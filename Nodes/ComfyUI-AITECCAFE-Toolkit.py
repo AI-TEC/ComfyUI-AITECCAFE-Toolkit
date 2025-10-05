@@ -3,7 +3,17 @@ import configparser
 import openai
 from openai import OpenAI
 import folder_paths
+from PIL import Image
+import torch
+import numpy as np
+import cv2
+import base64
+import io
+import json
 
+# ========================================
+# ChatGPTNode
+# ========================================
 class ChatGPTNode:
     @classmethod
     def INPUT_TYPES(s):
@@ -60,21 +70,9 @@ class ChatGPTNode:
         return float("nan")
 
 
-# ノードクラスマッピングに追加
-NODE_CLASS_MAPPINGS = {
-    "ChatGPTNode": ChatGPTNode,
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "ChatGPTNode": "AITEC ChatGPT Text Generator",
-}
-
-import os
-from PIL import Image
-import torch
-import numpy as np
-import cv2
-
+# ========================================
+# SequentialMediaLoader
+# ========================================
 class SequentialMediaLoader:
     @classmethod
     def INPUT_TYPES(cls):
@@ -96,7 +94,7 @@ class SequentialMediaLoader:
     CATEGORY = "image"
 
     def load_sequential_media(self, folder_path, seed, include_subfolders, frame_index, load_all_frames, max_frames, frame_step):
-        # 有効な拡張子（画像と動画）
+        # 有効な拡張子(画像と動画)
         image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp']
         video_extensions = ['.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.webm']
         valid_extensions = image_extensions + video_extensions
@@ -149,7 +147,7 @@ class SequentialMediaLoader:
         image_np = np.array(image).astype(np.float32) / 255.0
         image_tensor = torch.from_numpy(image_np)[None,]
         
-        # マスクを生成（グレースケール変換）
+        # マスクを生成(グレースケール変換)
         mask = Image.open(image_path).convert('L')
         mask_np = np.array(mask).astype(np.float32) / 255.0
         mask_tensor = torch.from_numpy(mask_np)[None,]
@@ -189,7 +187,7 @@ class SequentialMediaLoader:
         image_np = frame_rgb.astype(np.float32) / 255.0
         image_tensor = torch.from_numpy(image_np)[None,]
         
-        # マスクを生成（グレースケール変換）
+        # マスクを生成(グレースケール変換)
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         mask_np = frame_gray.astype(np.float32) / 255.0
         mask_tensor = torch.from_numpy(mask_np)[None,]
@@ -227,7 +225,7 @@ class SequentialMediaLoader:
                 frame_np = frame_rgb.astype(np.float32) / 255.0
                 frames.append(frame_np)
                 
-                # マスクを生成（グレースケール変換）
+                # マスクを生成(グレースケール変換)
                 frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 mask_np = frame_gray.astype(np.float32) / 255.0
                 masks.append(mask_np)
@@ -253,14 +251,10 @@ class SequentialMediaLoader:
         
         return image_tensor, mask_tensor, total_frames
 
-NODE_CLASS_MAPPINGS = {
-    "SequentialMediaLoader": SequentialMediaLoader
-}
 
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "SequentialMediaLoader": "AITEC Sequential Media Loader"
-}
-
+# ========================================
+# CustomStringMergeNode
+# ========================================
 class CustomStringMergeNode:
     @classmethod
     def INPUT_TYPES(cls):
@@ -270,7 +264,7 @@ class CustomStringMergeNode:
                 "use_string2": ("BOOLEAN", {"default": True, "label_on": "Enabled", "label_off": "Disabled"}),
                 "use_string3": ("BOOLEAN", {"default": False, "label_on": "Enabled", "label_off": "Disabled"}),
             },
-            "optional": {  # string1～3をoptionalに移動
+            "optional": {  # string1~3をoptionalに移動
                 "string1": ("STRING", {"default": ""}),
                 "string2": ("STRING", {"default": ""}),
                 "string3": ("STRING", {"default": ""}),
@@ -297,19 +291,10 @@ class CustomStringMergeNode:
         merged = " \n".join(strings) if strings else ""
         return (merged,)
 
-NODE_CLASS_MAPPINGS = {
-    "CustomStringMerge": CustomStringMergeNode
-}
 
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "CustomStringMerge": "AITEC Custom String Merge"
-}
-
-import os
-from PIL import Image
-import torch
-import numpy as np
-
+# ========================================
+# SequentialImageLoader
+# ========================================
 class SequentialImageLoader:
     @classmethod
     def INPUT_TYPES(cls):
@@ -370,23 +355,10 @@ class SequentialImageLoader:
             "hidden": {"seed": seed + 1}
         }
 
-NODE_CLASS_MAPPINGS = {
-    "SequentialImageLoader": SequentialImageLoader
-}
 
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "SequentialImageLoader": "AITEC Sequential Image Loader"
-}
-
-import os
-import base64
-import io
-import json
-import torch
-import numpy as np
-from PIL import Image
-from openai import OpenAI
-
+# ========================================
+# OpenAIImageModeration
+# ========================================
 class OpenAIImageModeration:
     
     #OpenAI omni-moderation-latestモデルを使用して画像のモデレーションを行うノード
@@ -550,11 +522,21 @@ class OpenAIImageModeration:
             return (image, error_msg)
 
 
-# ノードマッピング
+# ========================================
+# ノードマッピング(統合版)
+# ========================================
 NODE_CLASS_MAPPINGS = {
+    "ChatGPTNode": ChatGPTNode,
+    "SequentialMediaLoader": SequentialMediaLoader,
+    "CustomStringMerge": CustomStringMergeNode,
+    "SequentialImageLoader": SequentialImageLoader,
     "OpenAIImageModeration": OpenAIImageModeration
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "OpenAIImageModeration": "AITEC OpenAI Image Moderation"
+    "ChatGPTNode": "ChatGPT Text Generator",
+    "SequentialMediaLoader": "Sequential Media Loader",
+    "CustomStringMerge": "Custom String Merge",
+    "SequentialImageLoader": "Sequential Image Loader",
+    "OpenAIImageModeration": "OpenAI Image Moderation"
 }
