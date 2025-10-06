@@ -25,7 +25,7 @@
 *   **Sequential Media Loader**: 指定されたフォルダから画像または動画をロードします。
 *   **Custom String Merge**: 複数の文字列を結合します。
 
-##ChatGPT Text Generator
+## ChatGPT Text Generator
 
 このノードはGPT-4.1を利用して、回答がtextで出力されます。
 **APIキーは各自の責任で取り扱いに注意してご利用ください**
@@ -35,7 +35,7 @@
 *   **role setting**: ChatGPT APIへ送るシステムプロンプト
 *   **api_key**: OpenAIのAPIキー
 
-##OpenAI Image Moderation
+## OpenAI Image Moderation
 
 このノードはOpenAIのomni-moderationを利用して、不適切コンテンツを検出しtextで出力します
 block_flaggedを設定することで、不適切コンテンツが検出された場合にimage出力をブロックすることができます
@@ -48,7 +48,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **language**: 言語の選択を行います  English/Japanese
 *   **block_flagged**: 不適切コンテンツが検出された場合image出力をブロックする
 
-##Sequential Image Loader
+## Sequential Image Loader
 
 このノードは指定されたフォルダ内の画像をロードすることができます
 
@@ -56,7 +56,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **seed**: incrementを指定するとフォルダ内の画像をファイル名順に読み出すことができる
 *   **include_subfolders**: サブフォルダの画像も読み出すかどうかを設定
 
-##Sequential Media Loader
+## Sequential Media Loader
 
 このノードは指定されたフォルダ内のメディアをロードすることができます
 
@@ -68,7 +68,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **max_frames**: 最大何フレームまで読み込むかを設定
 *   **frame_step**: 何フレームごとに読み込むかを設定
 
-##Custom String Merge
+## Custom String Merge
 
 このノードは3つのStringを１番から順にマージします
 
