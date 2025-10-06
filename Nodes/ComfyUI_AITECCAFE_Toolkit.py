@@ -20,7 +20,7 @@ class ChatGPTNode:
         return {
             "required": {
                 "input_text": ("STRING", {"multiline": True, "default": ""}),
-                "role_setting": ("STRING", {"multiline": True, "default": "あなたは親切なアシスタントです。"}),
+                "role_setting": ("STRING", {"multiline": True, "default": ""}),
                 "api_key": ("STRING", {"multiline": False, "default": ""}),
             }
         }
@@ -34,16 +34,16 @@ class ChatGPTNode:
         self.last_response = ""
 
     def generate_response(self, input_text, role_setting, api_key):
-        """ChatGPTでテキストを生成"""
+        """Generate text with ChatGPT"""
         if not api_key.strip():
-            print("APIキーが入力されていません")
+            print("API key not entered")
             return ("",)
         
         if not input_text.strip():
             return ("",)
         
         try:
-            # APIキーを使ってクライアントを初期化
+            # Initialize the client with your API key
             client = OpenAI(api_key=api_key)
             
             response = client.chat.completions.create(
@@ -61,12 +61,12 @@ class ChatGPTNode:
             return (generated_text,)
             
         except Exception as e:
-            print(f"ChatGPT API呼び出しエラー: {e}")
+            print(f"ChatGPT API call error: {e}")
             return ("",)
 
     @classmethod
     def IS_CHANGED(s, input_text, role_setting, api_key):
-        # 入力が変わった場合に再実行
+        # Rerun if input changes
         return float("nan")
 
 
@@ -94,12 +94,12 @@ class SequentialMediaLoader:
     CATEGORY = "image"
 
     def load_sequential_media(self, folder_path, seed, include_subfolders, frame_index, load_all_frames, max_frames, frame_step):
-        # 有効な拡張子(画像と動画)
+        # Valid extensions (images and videos)
         image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp']
         video_extensions = ['.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.webm']
         valid_extensions = image_extensions + video_extensions
         
-        # メディアファイルリストを取得
+        # Get Media File List
         media_files = []
         if include_subfolders:
             for root, _, files in os.walk(folder_path):
@@ -112,42 +112,42 @@ class SequentialMediaLoader:
         if not media_files:
             raise ValueError(f"No valid media files found in folder: {folder_path}")
 
-        # ファイルを名前順にソート
+        # Sort files by name
         media_files.sort()
         
-        # seedをインデックスとして使用
+        # Use the seed as an index
         index = seed % len(media_files)
         selected_file = media_files[index]
         
-        # ファイル拡張子を確認
+        # Check the file extension
         file_ext = os.path.splitext(selected_file.lower())[1]
         filename = os.path.relpath(selected_file, folder_path)
         
         if file_ext in image_extensions:
-            # 画像ファイルの処理
+            # Processing image files
             image, mask = self._load_image(selected_file)
             total_frames = 1
             print(f"Selected image: {filename} (Seed: {seed}, Index: {index})")
             
         elif file_ext in video_extensions:
             if load_all_frames:
-                # 動画の全フレームを読み込み
+                # Load all frames of the video
                 image, mask, total_frames = self._load_all_video_frames(selected_file, max_frames, frame_step)
                 print(f"Selected video (all frames): {filename} (Seed: {seed}, Index: {index}, Loaded frames: {image.shape[0]}/{total_frames})")
             else:
-                # 単一フレームを読み込み
+                # Import Single Frame
                 image, mask, total_frames = self._load_video_frame(selected_file, frame_index)
                 print(f"Selected video (single frame): {filename} (Seed: {seed}, Index: {index}, Frame: {frame_index}/{total_frames-1})")
         
         return (image, mask, filename, total_frames)
     
     def _load_image(self, image_path):
-        """画像ファイルをロード"""
+        """Load an image file"""
         image = Image.open(image_path).convert('RGB')
         image_np = np.array(image).astype(np.float32) / 255.0
         image_tensor = torch.from_numpy(image_np)[None,]
         
-        # マスクを生成(グレースケール変換)
+        # Generate mask (grayscale conversion)
         mask = Image.open(image_path).convert('L')
         mask_np = np.array(mask).astype(np.float32) / 255.0
         mask_tensor = torch.from_numpy(mask_np)[None,]
@@ -155,23 +155,23 @@ class SequentialMediaLoader:
         return image_tensor, mask_tensor
     
     def _load_video_frame(self, video_path, frame_index):
-        """動画ファイルから指定フレームをロード"""
+        """Load a specific frame from a video file"""
         cap = cv2.VideoCapture(video_path)
         
         if not cap.isOpened():
             raise ValueError(f"Could not open video file: {video_path}")
         
-        # 総フレーム数を取得
+        # Get the total number of frames
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         
         if total_frames == 0:
             cap.release()
             raise ValueError(f"Video has no frames: {video_path}")
         
-        # フレームインデックスを範囲内に調整
+        # Adjust frame index within range整
         frame_index = frame_index % total_frames
         
-        # 指定フレームに移動
+        # Go to specified frame
         cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
         
         ret, frame = cap.read()
@@ -180,14 +180,14 @@ class SequentialMediaLoader:
         if not ret:
             raise ValueError(f"Could not read frame {frame_index} from video: {video_path}")
         
-        # BGR → RGB変換
+        # BGR to RGB conversion
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         
-        # numpy配列をテンソルに変換
+        # Convert numpy array to tensor
         image_np = frame_rgb.astype(np.float32) / 255.0
         image_tensor = torch.from_numpy(image_np)[None,]
         
-        # マスクを生成(グレースケール変換)
+        # Generate mask (grayscale conversion)
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         mask_np = frame_gray.astype(np.float32) / 255.0
         mask_tensor = torch.from_numpy(mask_np)[None,]
@@ -195,13 +195,13 @@ class SequentialMediaLoader:
         return image_tensor, mask_tensor, total_frames
     
     def _load_all_video_frames(self, video_path, max_frames, frame_step):
-        """動画ファイルからすべてのフレームをロード"""
+        """Load all frames from a video file"""
         cap = cv2.VideoCapture(video_path)
         
         if not cap.isOpened():
             raise ValueError(f"Could not open video file: {video_path}")
         
-        # 総フレーム数を取得
+        # Get the total number of frames
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         
         if total_frames == 0:
@@ -218,21 +218,21 @@ class SequentialMediaLoader:
             if not ret:
                 break
             
-            # frame_stepに従ってフレームをスキップ
+            # Skip frames according to frame_step
             if current_frame % frame_step == 0:
-                # BGR → RGB変換
+                # BGR to RGB conversion
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame_np = frame_rgb.astype(np.float32) / 255.0
                 frames.append(frame_np)
                 
-                # マスクを生成(グレースケール変換)
+                # Generate mask (grayscale conversion)
                 frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 mask_np = frame_gray.astype(np.float32) / 255.0
                 masks.append(mask_np)
                 
                 frame_count += 1
                 
-                # 最大フレーム数に達したら終了
+                # Stop when maximum number of frames is reached
                 if frame_count >= max_frames:
                     break
             
@@ -243,7 +243,7 @@ class SequentialMediaLoader:
         if not frames:
             raise ValueError(f"Could not load any frames from video: {video_path}")
         
-        # リストをテンソルに変換
+        # Convert a list to a tensor
         image_tensor = torch.from_numpy(np.array(frames))
         mask_tensor = torch.from_numpy(np.array(masks))
         
@@ -331,7 +331,7 @@ class SequentialImageLoader:
         image_files.sort()
         
         # Use seed as index, handle out of range
-        index = seed % len(image_files)  # 範囲外でもループ
+        index = seed % len(image_files) 
         
         # Select image based on index
         selected_image = image_files[index]
@@ -361,7 +361,7 @@ class SequentialImageLoader:
 # ========================================
 class OpenAIImageModeration:
     
-    #OpenAI omni-moderation-latestモデルを使用して画像のモデレーションを行うノード
+    #A node that performs image moderation using the OpenAI omni-moderation-latest model.
     
     CATEGORY_NAMES_JA = {
         "harassment": "嫌がらせ",
@@ -390,12 +390,12 @@ class OpenAIImageModeration:
                     "multiline": False,
                     "default": "sk-proj-..."
                 }),
-                "output_format": (["詳細", "簡潔", "JSON"],),
-                "language": (["日本語", "English"],),
+                "output_format": (["detail", "simple", "JSON"],),
+                "language": (["English", "Japanese"],),
                 "block_flagged": ("BOOLEAN", {
                     "default": False,
-                    "label_on": "ブロック",
-                    "label_off": "常に出力"
+                    "label_on": "block",
+                    "label_off": "always output"
                 }),
             }
         }
@@ -407,48 +407,48 @@ class OpenAIImageModeration:
     
     def tensor_to_base64(self, image_tensor):
         
-        #ComfyUIの画像テンソル (B, H, W, C) をbase64エンコードされた文字列に変換
+        #Convert ComfyUI image tensor (B, H, W, C) to a base64 encoded string
         
-        # テンソルを numpy配列に変換 (0-1の範囲を0-255に変換)
+        # Convert tensor to numpy array (0-1 range converted to 0-255)
         image_np = (image_tensor.squeeze(0).cpu().numpy() * 255).astype(np.uint8)
         
-        # PIL Imageに変換
+        # PIL Convert to Image
         pil_image = Image.fromarray(image_np)
         
-        # バイトストリームに保存
+        # Save to byte stream
         buffered = io.BytesIO()
         pil_image.save(buffered, format="JPEG", quality=95)
         
-        # base64エンコード
+        # Base64 encoding
         image_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
         
         return f"data:image/jpeg;base64,{image_base64}"
     
     def create_blank_image(self, original_image):
         
-        #元の画像と同じサイズの黒い画像を作成
+        #Create a black image the same size as the original image
         
-        # 元の画像と同じ形状のゼロテンソルを作成
+        #Create a zero tensor with the same shape as the original image
         blank = torch.zeros_like(original_image)
         return blank
     
-    def moderate_image(self, image, api_key, output_format="詳細", language="日本語", block_flagged=False):
+    def moderate_image(self, image, api_key, output_format="detail", language="Japanese", block_flagged=False):
         
-        #画像をモデレーションAPIで分析
+        #Analyze images with our moderation API
         
         try:
-            # APIキーの検証
+            # API Key Validation
             if not api_key or api_key == "sk-proj-..." or len(api_key) < 20:
-                error_msg = "エラー: 有効なOpenAI APIキーを入力してください。" if language == "日本語" else "Error: Please enter a valid OpenAI API key."
+                error_msg = "Error: Please enter a valid OpenAI API key." if language == "Japanese" else "Error: Please enter a valid OpenAI API key."
                 return (image, error_msg)
             
-            # OpenAIクライアントの初期化
+            # Initializing the OpenAI client
             client = OpenAI(api_key=api_key)
             
-            # 画像をbase64に変換
+            # Convert image to base64
             base64_url = self.tensor_to_base64(image)
             
-            # モデレーションAPIを呼び出し
+            # Call the moderation API
             response = client.moderations.create(
                 model="omni-moderation-latest",
                 input=[{"type": "image_url", "image_url": {"url": base64_url}}]
@@ -456,17 +456,17 @@ class OpenAIImageModeration:
             
             result = response.results[0]
             
-            # スコアを辞書形式で取得
+            # Get the score in dictionary format
             scores = {cat: float(getattr(result.category_scores, cat)) for cat in self.CATEGORIES}
             max_category = max(scores, key=scores.get)
             max_score = scores[max_category]
             
-            # 不適切コンテンツが検出され、ブロックモードが有効な場合
+            # Inappropriate content is detected and blocking mode is enabled
             output_image = image
             if result.flagged and block_flagged:
                 output_image = self.create_blank_image(image)
             
-            # 出力フォーマットに応じて結果を整形
+            #Arrange the results according to the output format
             if output_format == "JSON":
                 output = json.dumps({
                     "flagged": result.flagged,
@@ -476,8 +476,8 @@ class OpenAIImageModeration:
                     "scores": scores
                 }, indent=2, ensure_ascii=False)
             
-            elif output_format == "簡潔":
-                if language == "日本語":
+            elif output_format == "simple":
+                if language == "Japanese":
                     status = "検出された" if result.flagged else "検出されなかった"
                     category_name = self.CATEGORY_NAMES_JA[max_category]
                     output = f"不適切コンテンツ: {status}\n最高スコア: {category_name} ({max_score:.4f})"
@@ -490,7 +490,7 @@ class OpenAIImageModeration:
                         output += "\n⚠️ Image blocked"
             
             else:  # 詳細
-                if language == "日本語":
+                if language == "Japanese":
                     status = "検出された" if result.flagged else "検出されなかった"
                     output = f"=== モデレーション結果 ===\n"
                     output += f"不適切コンテンツ: {status}\n"
@@ -518,7 +518,7 @@ class OpenAIImageModeration:
             return (output_image, output)
         
         except Exception as e:
-            error_msg = f"エラーが発生しました: {str(e)}" if language == "日本語" else f"Error: {str(e)}"
+            error_msg = f"An error has occurred: {str(e)}" if language == "Japanese" else f"Error: {str(e)}"
             return (image, error_msg)
 
 
