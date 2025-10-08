@@ -28,7 +28,7 @@ class ChatGPTNode:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("output_text",)
     FUNCTION = "generate_response"
-    CATEGORY = "text"
+    CATEGORY = "AITECCAFE-Toolkit"
 
     def __init__(self):
         self.last_response = ""
@@ -91,7 +91,7 @@ class SequentialMediaLoader:
     RETURN_TYPES = ("IMAGE", "MASK", "STRING", "INT")
     RETURN_NAMES = ("image", "mask", "filename", "total_frames")
     FUNCTION = "load_sequential_media"
-    CATEGORY = "image"
+    CATEGORY = "AITECCAFE-Toolkit"
 
     def load_sequential_media(self, folder_path, seed, include_subfolders, frame_index, load_all_frames, max_frames, frame_step):
         # Valid extensions (images and videos)
@@ -276,7 +276,7 @@ class CustomStringMergeNode:
     
     FUNCTION = "merge_strings"
     
-    CATEGORY = "text"
+    CATEGORY = "AITECCAFE-Toolkit"
     
     def merge_strings(self, string1="", string2="", string3="", use_string1=True, use_string2=True, use_string3=False):
         print(f"Switches: use_string1={use_string1}, use_string2={use_string2}, use_string3={use_string3}")
@@ -309,7 +309,7 @@ class SequentialImageLoader:
     RETURN_TYPES = ("IMAGE", "MASK")
     RETURN_NAMES = ("image", "mask")
     FUNCTION = "load_sequential_image"
-    CATEGORY = "image"
+    CATEGORY = "AITECCAFE-Toolkit"
 
     def load_sequential_image(self, folder_path, seed, include_subfolders):
         valid_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
@@ -403,7 +403,7 @@ class OpenAIImageModeration:
     RETURN_TYPES = ("IMAGE", "STRING")
     RETURN_NAMES = ("image", "moderation_result")
     FUNCTION = "moderate_image"
-    CATEGORY = "image/analysis"
+    CATEGORY = "AITECCAFE-Toolkit"
     
     def tensor_to_base64(self, image_tensor):
         
