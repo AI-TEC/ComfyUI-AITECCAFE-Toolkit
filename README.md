@@ -4,6 +4,14 @@
 
 ## インストール
 
+### ComfyUI Manager
+1. ComfyUIを起動します。
+2. ComfyUI Managerを開きます。
+3. Custom Nodes Managerを開きます。
+4. "AITECCAFE"で検索するなどして、ComfyUI_AITECCAFE_Toolkitをインストールします。
+5. ComfyUIを再起動します。
+
+### コマンドライン
 1. ComfyUIの `custom_nodes` フォルダに移動します。
 2. 以下のコマンドを使用して、このリポジトリをクローンします。
    ```bash
