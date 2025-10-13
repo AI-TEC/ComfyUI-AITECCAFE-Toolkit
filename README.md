@@ -28,7 +28,7 @@
 4. ComfyUIを再起動します。
 
 ## ノード一覧
-    ![node list](https://github.com/AI-TEC/images/blob/main/0002.jpg)
+<img src="https://github.com/AI-TEC/images/blob/main/0002.jpg" alt="Node List">
 このToolkitには以下のノードが含まれています。
 
 *   **ChatGPT Text Generator**: ChatGPT APIを使用してテキストを生成します。
@@ -38,22 +38,24 @@
 *   **Custom String Merge**: 複数の文字列を結合します。
 
 ## ChatGPT Text Generator
-    ![ChatGPT Text Generator](https://github.com/AI-TEC/images/blob/main/0003.jpg)
-このノードはGPT-4.1を利用して、回答がtextで出力されます。
-**APIキーは各自の責任で取り扱いに注意してご利用ください**
-**APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**
+<img src="https://github.com/AI-TEC/images/blob/main/0003.jpg" alt="ChatGPT Text Generator">
+このノードはGPT-4.1を利用して、回答がtextで出力されます。  
+
+**APIキーは各自の責任で取り扱いに注意してご利用ください**  
+**APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**  
 
 *   **input text**: ChatGPT APIへ送るプロンプト
 *   **role setting**: ChatGPT APIへ送るシステムプロンプト
 *   **api_key**: OpenAIのAPIキー
 
 ## OpenAI Image Moderation
-    ![OpenAI Image Moderation](https://github.com/AI-TEC/images/blob/main/0004.jpg)
-このノードはOpenAIのomni-moderationを利用して、不適切コンテンツを検出しtextで出力します
-block_flaggedを設定することで、不適切コンテンツが検出された場合にimage出力をブロックすることができます
-検出されるスコアは目安として参考にしてください。
-**APIキーは各自の責任で取り扱いに注意してご利用ください**
-**APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**
+<img src="https://github.com/AI-TEC/images/blob/main/0004.jpg" alt="OpenAI Image Moderation">
+このノードはOpenAIのomni-moderationを利用して、不適切コンテンツを検出しtextで出力します。  
+
+block_flaggedを設定することで、不適切コンテンツが検出された場合にimage出力をブロックすることができます。  
+検出されるスコアは目安として参考にしてください。  
+**APIキーは各自の責任で取り扱いに注意してご利用ください**  
+**APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**  
 
 *   **api_key**: OpenAIのAPIキー
 *   **output_format**: 結果の表示形式を選択  detail/simple/json
@@ -61,7 +63,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **block_flagged**: 不適切コンテンツが検出された場合image出力をブロックする
 
 ## Sequential Image Loader
-    ![Sequential Image Loader](https://github.com/AI-TEC/images/blob/main/0007.jpg)
+<img src="https://github.com/AI-TEC/images/blob/main/0007.jpg" alt="Sequential Image Loader">
 このノードは指定されたフォルダ内の画像をロードすることができます
 
 *   **folder_path**: 読み取りたい画像のあるフォルダのパス
@@ -69,7 +71,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **include_subfolders**: サブフォルダの画像も読み出すかどうかを設定
 
 ## Sequential Media Loader
-    ![Sequential Media Loader](https://github.com/AI-TEC/images/blob/main/0006.jpg)
+<img src="https://github.com/AI-TEC/images/blob/main/0006.jpg" alt="Sequential Media Loader">
 このノードは指定されたフォルダ内のメディアをロードすることができます
 
 *   **folder_path**: 読み取りたいメディアのあるフォルダのパス
@@ -81,7 +83,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **frame_step**: 何フレームごとに読み込むかを設定
 
 ## Custom String Merge
-    ![Custom String Merge](https://github.com/AI-TEC/images/blob/main/0005.jpg)
+<img src="https://github.com/AI-TEC/images/blob/main/0005.jpg" alt="Custom String Merge">
 このノードは3つのStringを１番から順にマージします
 
 *   **use_string1**: string1を利用するかを設定
