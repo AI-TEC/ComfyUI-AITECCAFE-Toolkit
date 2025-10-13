@@ -2,6 +2,9 @@
 
 このリポジトリには、AITECCAFEによって開発されたComfyUI用のカスタムノードが含まれています。
 
+## note紹介
+[noteに投稿したノードの紹介文です](https://note.com/ai_tec/n/ne3d398fe9548)
+
 ## インストール
 
 ### ComfyUI Manager
@@ -9,6 +12,7 @@
 2. ComfyUI Managerを開きます。
 3. Custom Nodes Managerを開きます。
 4. "AITECCAFE"で検索するなどして、ComfyUI_AITECCAFE_Toolkitをインストールします。
+    ![ComfyUI Manager](https://github.com/AI-TEC/images/blob/main/0001.jpg)
 5. ComfyUIを再起動します。
 
 ### コマンドライン
@@ -24,7 +28,7 @@
 4. ComfyUIを再起動します。
 
 ## ノード一覧
-
+    ![node list](https://github.com/AI-TEC/images/blob/main/0002.jpg)
 このToolkitには以下のノードが含まれています。
 
 *   **ChatGPT Text Generator**: ChatGPT APIを使用してテキストを生成します。
@@ -34,7 +38,7 @@
 *   **Custom String Merge**: 複数の文字列を結合します。
 
 ## ChatGPT Text Generator
-
+    ![ChatGPT Text Generator](https://github.com/AI-TEC/images/blob/main/0003.jpg)
 このノードはGPT-4.1を利用して、回答がtextで出力されます。
 **APIキーは各自の責任で取り扱いに注意してご利用ください**
 **APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**
@@ -44,7 +48,7 @@
 *   **api_key**: OpenAIのAPIキー
 
 ## OpenAI Image Moderation
-
+    ![OpenAI Image Moderation](https://github.com/AI-TEC/images/blob/main/0004.jpg)
 このノードはOpenAIのomni-moderationを利用して、不適切コンテンツを検出しtextで出力します
 block_flaggedを設定することで、不適切コンテンツが検出された場合にimage出力をブロックすることができます
 検出されるスコアは目安として参考にしてください。
@@ -57,7 +61,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **block_flagged**: 不適切コンテンツが検出された場合image出力をブロックする
 
 ## Sequential Image Loader
-
+    ![Sequential Image Loader](https://github.com/AI-TEC/images/blob/main/0007.jpg)
 このノードは指定されたフォルダ内の画像をロードすることができます
 
 *   **folder_path**: 読み取りたい画像のあるフォルダのパス
@@ -65,7 +69,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **include_subfolders**: サブフォルダの画像も読み出すかどうかを設定
 
 ## Sequential Media Loader
-
+    ![Sequential Media Loader](https://github.com/AI-TEC/images/blob/main/0006.jpg)
 このノードは指定されたフォルダ内のメディアをロードすることができます
 
 *   **folder_path**: 読み取りたいメディアのあるフォルダのパス
@@ -77,7 +81,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   **frame_step**: 何フレームごとに読み込むかを設定
 
 ## Custom String Merge
-
+    ![Custom String Merge](https://github.com/AI-TEC/images/blob/main/0005.jpg)
 このノードは3つのStringを１番から順にマージします
 
 *   **use_string1**: string1を利用するかを設定
