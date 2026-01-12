@@ -11,7 +11,8 @@ Repository = "https://github.com/AI-TEC/ComfyUI-AITECCAFE-Toolkit"
 [tool.comfy]
 PublisherId = "aiteccafe"
 DisplayName = "ComfyUI_AITECCAFE_Toolkit"
-Icon = ""
+Icon = "https://github.com/AI-TEC/images/blob/main/AITEC_ani_logo.jpg"
+
 
 
 
