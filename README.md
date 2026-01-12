@@ -73,7 +73,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 
 *   **block_nsfw**: NSFWをブロックするかどうか設定　pass through/block
 *   **use_threshold**: score基準でブロックするかどうか  enabled/disabled
-*   **threshold**: この値を超えた場合ブロックする
+*   **threshold**: この値を超えた場合ブロックする　　
 **block_nsfwの設定が優先されます**　
 
 ## Sequential Image Loader
