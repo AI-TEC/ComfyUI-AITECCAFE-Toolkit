@@ -66,8 +66,8 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 *   ## NSFW Checker
 <img src="https://github.com/AI-TEC/images/blob/main/0008.jpg" alt="NSFW Checker">
 このノードはopennsfw2を利用して、不適切コンテンツを検出しtextで出力します。  
-こちらのノードはAPIキーは不要で、ローカルで動作します。  
 
+こちらのノードはAPIキーは不要で、ローカルで動作します。  
 不適切コンテンツが検出された場合にimage出力をブロックすることができます。  
 検出されるスコアは目安として参考にしてください。  
 
