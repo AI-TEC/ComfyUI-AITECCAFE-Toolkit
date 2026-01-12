@@ -1,5 +1,5 @@
 [project]
-name = "aiteccafe-toolkit"
+name = "ComfyUI_AITECCAFE_Toolkit"
 description = "This custom node includes the following functions: Chat_GPT, image_moderation, media_loader, merge_strings, sequential_image_loader, NSFW Checker."
 version = "1.1.1"
 license = { file = "LICENSE" }
@@ -10,7 +10,8 @@ Repository = "https://github.com/AI-TEC/ComfyUI-AITECCAFE-Toolkit"
 
 [tool.comfy]
 PublisherId = "aiteccafe"
-DisplayName = "ComfyUI-AITECCAFE-Toolkit"
+DisplayName = "ComfyUI_AITECCAFE_Toolkit"
 Icon = ""
+
 
 
