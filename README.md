@@ -28,12 +28,13 @@
 4. ComfyUIを再起動します。
 
 ### llama-cpp-python インストール
-- .whlファイルはJamePengさんが配布されています
+llama-cpp-pythonはご自身の環境に合った.whlファイルからインストールして頂くのが確実です。  
+- 例：.whlファイル配布元（JamePengさん）  
   https://github.com/JamePeng/llama-cpp-python
 
 ## ノード一覧
 <img src="https://github.com/AI-TEC/images/blob/main/0002.jpg" alt="Node List">
-このToolkitには以下のノードが含まれています。
+このToolkitには以下のノードが含まれています。  
 
 *   **💬 AITEC ChatGPT Chat**: ChatGPT APIを使用してテキストを生成します。
 *   **🛡️ AITEC Image Moderation**: OpenAIのモデレーションAPIを使用して画像を分析し、不適切なコンテンツを検出します。
@@ -81,7 +82,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 <img src="https://github.com/AI-TEC/images/blob/main/0008.jpg" alt="NSFW Checker">
 このノードはopennsfw2を利用して、不適切コンテンツを検出しtextで出力します。  
 
-こちらのノードはAPIキーは不要で、ローカルで動作します。  
+Image Moderationノードと違いAPIキーは不要で、ローカルで動作します。  
 不適切コンテンツが検出された場合にimage出力をブロックすることができます。  
 検出されるスコアは目安として参考にしてください。  
 
@@ -94,7 +95,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 
 ## 🖼️ AITEC Image Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0007.jpg" alt="Sequential Image Loader">
-このノードは指定されたフォルダ内の画像をロードすることができます
+このノードは指定されたフォルダ内の画像をロードすることができます  
 
 *   **folder_path**: 読み取りたい画像のあるフォルダのパス
 *   **seed**: incrementを指定するとフォルダ内の画像をファイル名順に読み出すことができる
@@ -104,7 +105,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 
 ## 🎞️ AITEC Media Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0006.jpg" alt="Sequential Media Loader">
-このノードは指定されたフォルダ内のメディアをロードすることができます
+このノードは指定されたフォルダ内のメディアをロードすることができます  
 
 *   **folder_path**: 読み取りたいメディアのあるフォルダのパス
 *   **seed**: incrementを指定するとフォルダ内のメディアをファイル名順に読み出すことができる
@@ -118,7 +119,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 
 ## 🔗 AITEC String Merge
 <img src="https://github.com/AI-TEC/images/blob/main/0005.jpg" alt="Custom String Merge">
-このノードは3つのStringを１番から順にマージします
+このノードは3つのStringを１番から順にマージします  
 
 *   **use_string1**: string1を利用するかを設定
 *   **use_string2**: string2を利用するかを設定
@@ -131,19 +132,24 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 
 ## 📦 AITEC LLM Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0009.jpg" alt="AITEC LLM Loader">
-ローカル環境のLLM（.gguf）モデルを読み込みます。  
-読み込まれたモデルは他のLLMノードで共有され、メモリ効率よく利用されます。
+ローカル環境のLLM（.gguf,.safetensors）モデルを読み込みます。  
+
+読み込まれたモデルは他のLLMノードで共有され、メモリ効率よく利用されます。  
 
 *   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
 *   **n_ctx**: コンテキストサイズ
 *   **n_gpu_layers**: GPUにオフロードするレイヤー数（-1で全て）
 
+例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)  
+*   https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive
+*   https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
 ---
 
 ## 💬 AITEC LLM Chat
 <img src="https://github.com/AI-TEC/images/blob/main/0010.jpg" alt="AITEC LLM Chat">
 ローカルLLMを使用してテキスト生成を行います。  
-Loaderノードで読み込んだモデルを共有して使用するため、複数配置してもメモリ使用量は増えません。
+
+Loaderノードで読み込んだモデルを共有して使用するため、複数配置してもメモリ使用量は増えません。  
 
 *   **model**: Loaderからのモデル入力
 *   **system_prompt**: システムプロンプト
@@ -162,20 +168,25 @@ Loaderノードで読み込んだモデルを共有して使用するため、�
 
 ## 📦 AITEC LLM Vision Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0011.jpg" alt="AITEC LLM Vision Loader">
-画像対応LLM（Visionモデル）を読み込みます。  
-mmprojファイルと組み合わせて、画像入力を扱えるようにします。
+画像対応LLM（Visionモデル）と mmprojファイル を読み込みます。（.gguf,.safetensors）  
+
+mmprojファイルと組み合わせて、画像入力を扱えるようにします。  
 
 *   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
 *   **mmproj_file**: Vision用プロジェクションモデル（mmproj）（モデルの保存先:ComfyUI/models/llm）
 *   **n_ctx**: コンテキストサイズ
 *   **n_gpu_layers**: GPUレイヤー設定
 
+例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)    
+*   https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive
+*   https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
 ---
 
 ## 🖼️ AITEC LLM Vision
 <img src="https://github.com/AI-TEC/images/blob/main/0012.jpg" alt="AITEC LLM Vision">
 画像を入力としてLLMによる解析・説明生成を行います。  
-最大4枚までの画像入力に対応しています。
+
+最大4枚までの画像入力に対応しています。  
 
 *   **model**: Vision Loaderからのモデル入力
 *   **system_prompt**: システムプロンプト
@@ -197,12 +208,12 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 - `opencv-python`
 - `opennsfw2`
 - `tensorflow`
-- `llama-cpp-python`
-  .whlファイルはJamePengさんが配布されています。
+- `llama-cpp-python`  
+  .whlファイルはJamePengさんが配布されています。  
   https://github.com/JamePeng/llama-cpp-python
 
 ## ライセンス
 
-MIT License
+MIT License  
 [LICENSE](LICENSE)ファイルを参照してください。
 
