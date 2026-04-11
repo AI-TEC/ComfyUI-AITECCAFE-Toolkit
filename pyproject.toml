@@ -1,14 +1,17 @@
 [project]
 name = "ComfyUI_AITECCAFE_Toolkit"
-description = "This custom node includes the following functions: Chat_GPT, image_moderation, media_loader, merge_strings, sequential_image_loader, NSFW Checker."
-version = "1.1.1"
+description = "This custom node includes the following functions: LLM Loader, Chat_GPT, LLM Vision Loader, LLM Chat, LLM Vision, Image Loader, Media Loader, ChatGPT Chat, Image Moderation, NSFW Checkerm, String Merge.LLM now supports Qwen 3.5 and Gemma 4 by updating llama-cpp-python to the latest version."
+version = "1.2.0"
 license = { file = "LICENSE" }
 dependencies  = ["openai","opencv-python","opennsfw2","tensorflow"]
 
 [project.urls]
 Repository = "https://github.com/AI-TEC/ComfyUI-AITECCAFE-Toolkit"
+Documentation = "https://github.com/AI-TEC/ComfyUI-AITECCAFE-Toolkit/wiki"
+"Bug Tracker" = "https://github.com/AI-TEC/ComfyUI-AITECCAFE-Toolkit/issues"
 
 [tool.comfy]
 PublisherId = "aiteccafe"
 DisplayName = "ComfyUI_AITECCAFE_Toolkit"
 Icon = ""
+includes = [] 
