@@ -10,6 +10,8 @@ import cv2
 import base64
 import io
 import json
+import opennsfw2 as n2
+import tensorflow
 
 # ========================================
 # ChatGPTNode
@@ -523,20 +525,173 @@ class OpenAIImageModeration:
 
 
 # ========================================
+# NSFWChecker
+# ========================================
+class NSFWChecker:
+    """
+    A node that checks images/videos for NSFW content using opennsfw2.
+    """
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "block_nsfw": ("BOOLEAN", {
+                    "default": False,
+                    "label_on": "block",
+                    "label_off": "pass through"
+                }),
+                "use_threshold": ("BOOLEAN", {
+                    "default": True,
+                    "label_on": "enabled",
+                    "label_off": "disabled"
+                }),
+                "threshold": ("FLOAT", {
+                    "default": 0.8,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                    "display": "slider"
+                }),
+            }
+        }
+    
+    RETURN_TYPES = ("IMAGE", "STRING")
+    RETURN_NAMES = ("image", "result")
+    FUNCTION = "check_nsfw"
+    CATEGORY = "AITECCAFE-Toolkit"
+    
+    def create_black_pixel(self):
+        """Create a 1x1 black pixel image tensor"""
+        black_pixel = torch.zeros((1, 1, 1, 3), dtype=torch.float32)
+        return black_pixel
+    
+    def tensor_to_pil(self, image_tensor):
+        """Convert a single frame tensor to PIL Image"""
+        # (H, W, C) format, 0-1 range to 0-255
+        image_np = (image_tensor.cpu().numpy() * 255).astype(np.uint8)
+        return Image.fromarray(image_np)
+    
+    def check_nsfw(self, image, block_nsfw=False, use_threshold=True, threshold=0.8):
+        """
+        Check image/video frames for NSFW content
+        """
+       
+        try:
+            # Get batch size (number of frames)
+            batch_size = image.shape[0]
+            
+            max_probability = 0.0
+            max_frame_idx = 0
+            all_probabilities = []
+            
+            # Check each frame
+            for i in range(batch_size):
+                frame = image[i]
+                pil_image = self.tensor_to_pil(frame)
+                
+                # Save temporarily for opennsfw2
+                temp_path = os.path.join(folder_paths.get_temp_directory(), f"temp_nsfw_check_{i}.jpg")
+                pil_image.save(temp_path, "JPEG")
+                
+                # Get NSFW probability
+                probability = n2.predict_image(temp_path)
+                all_probabilities.append(float(probability))
+                
+                # Track maximum
+                if probability > max_probability:
+                    max_probability = probability
+                    max_frame_idx = i
+                
+                # Clean up temp file
+                try:
+                    os.remove(temp_path)
+                except:
+                    pass
+            
+            # Determine if content should be blocked
+            should_block = False
+            
+            if block_nsfw:
+                # block_nsfw=ON: Block if NSFW detected (regardless of threshold)
+                # Using opennsfw2's default threshold (typically around 0.5)
+                is_nsfw = max_probability >= 0.5
+                should_block = is_nsfw
+                block_reason = "NSFW detected (block_nsfw enabled)"
+            elif use_threshold:
+                # block_nsfw=OFF + use_threshold=ON: Block if score >= threshold
+                should_block = max_probability >= threshold
+                is_nsfw = should_block
+                block_reason = f"Score >= threshold ({threshold:.2f})"
+            else:
+                # block_nsfw=OFF + use_threshold=OFF: Never block
+                should_block = False
+                is_nsfw = max_probability >= 0.5  # For status display only
+                block_reason = "Blocking disabled"
+            
+            output_image = image
+            
+            if should_block:
+                output_image = self.create_black_pixel()
+            
+            # Format result text
+            status = "NSFW" if is_nsfw else "SAFE"
+            result_text = f"=== NSFW Check Result ===\n"
+            result_text += f"Status: {status}\n"
+            result_text += f"Max Score: {max_probability:.4f}\n"
+            
+            # Display blocking mode
+            if block_nsfw:
+                result_text += f"Mode: Block NSFW (threshold ignored)\n"
+            elif use_threshold:
+                result_text += f"Mode: Block if score >= {threshold:.2f}\n"
+            else:
+                result_text += f"Mode: No blocking\n"
+            
+            if batch_size > 1:
+                # Video or batch images
+                result_text += f"\nTotal Frames: {batch_size}\n"
+                result_text += f"Max Score Frame: {max_frame_idx}\n"
+                result_text += f"Timestamp: {max_frame_idx} frames"
+                
+                # Show statistics
+                avg_prob = sum(all_probabilities) / len(all_probabilities)
+                result_text += f"\n\nStatistics:\n"
+                result_text += f"  Average Score: {avg_prob:.4f}\n"
+                result_text += f"  Min Score: {min(all_probabilities):.4f}\n"
+                result_text += f"  Max Score: {max_probability:.4f}\n"
+            else:
+                # Single image
+                result_text += f"\nType: Single Image"
+            
+            if should_block:
+                result_text += f"\n\n⚠️ Content blocked - 1x1 black pixel output"
+                result_text += f"\nReason: {block_reason}"
+            
+            return (output_image, result_text)
+        
+        except Exception as e:
+            error_msg = f"Error during NSFW check: {str(e)}"
+            return (image, error_msg)
+
+# ========================================
 # ノードマッピング(統合版)
 # ========================================
 NODE_CLASS_MAPPINGS = {
-    "ChatGPTNode": ChatGPTNode,
+    "ChatGPTNode":           ChatGPTNode,
     "SequentialMediaLoader": SequentialMediaLoader,
-    "CustomStringMerge": CustomStringMergeNode,
+    "CustomStringMerge":     CustomStringMergeNode,
     "SequentialImageLoader": SequentialImageLoader,
-    "OpenAIImageModeration": OpenAIImageModeration
+    "OpenAIImageModeration": OpenAIImageModeration,
+    "NSFWChecker":           NSFWChecker
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ChatGPTNode": "ChatGPT Text Generator",
-    "SequentialMediaLoader": "Sequential Media Loader",
-    "CustomStringMerge": "Custom String Merge",
-    "SequentialImageLoader": "Sequential Image Loader",
-    "OpenAIImageModeration": "OpenAI Image Moderation"
+    "ChatGPTNode":           "💬 AITEC ChatGPT Chat",
+    "SequentialMediaLoader": "🎞️ AITEC Media Loader",
+    "CustomStringMerge":     "🔗 AITEC String Merge",
+    "SequentialImageLoader": "🖼️ AITEC Image Loader",
+    "OpenAIImageModeration": "🛡️ AITEC Image Moderation",
+    "NSFWChecker":           "🚫 AITEC NSFW Checker"
 }
