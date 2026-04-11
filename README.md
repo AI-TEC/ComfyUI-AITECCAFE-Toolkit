@@ -27,6 +27,10 @@
    ```
 4. ComfyUIを再起動します。
 
+### llama-cpp-python インストール
+- .whlファイルはJamePengさんが配布されています
+  https://github.com/JamePeng/llama-cpp-python
+
 ## ノード一覧
 <img src="https://github.com/AI-TEC/images/blob/main/0002.jpg" alt="Node List">
 このToolkitには以下のノードが含まれています。
@@ -151,8 +155,7 @@ Loaderノードで読み込んだモデルを共有して使用するため、�
 *   **remove_chatml**: ChatMLタグの整理
 *   **suppress_thinking**: 推論過程の出力抑制
 
-- Connection example
-  [AITEC LLM Loader]        → MODEL → [AITEC LLM Chat] 
+- **接続例**:[AITEC LLM Loader]        → MODEL → [AITEC LLM Chat] 
 <img src="https://github.com/AI-TEC/images/blob/main/0013.jpg" alt="Connection example AITEC LLM">
 
 ---
@@ -185,8 +188,7 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 *   **suppress_thinking**: 推論抑制
 *   **image1〜image4**: 入力画像
 
-- Connection example
-  [AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]
+- **接続例**:[AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]
 <img src="https://github.com/AI-TEC/images/blob/main/0014.jpg" alt="Connection example AITEC LLM Vision">
 
 ## 依存関係
