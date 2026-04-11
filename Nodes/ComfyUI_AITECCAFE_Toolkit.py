@@ -679,19 +679,19 @@ class NSFWChecker:
 # ノードマッピング(統合版)
 # ========================================
 NODE_CLASS_MAPPINGS = {
-    "ChatGPTNode": ChatGPTNode,
+    "ChatGPTNode":           ChatGPTNode,
     "SequentialMediaLoader": SequentialMediaLoader,
-    "CustomStringMerge": CustomStringMergeNode,
+    "CustomStringMerge":     CustomStringMergeNode,
     "SequentialImageLoader": SequentialImageLoader,
     "OpenAIImageModeration": OpenAIImageModeration,
-    "NSFWChecker": NSFWChecker
+    "NSFWChecker":           NSFWChecker
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ChatGPTNode": "ChatGPT Text Generator",
-    "SequentialMediaLoader": "Sequential Media Loader",
-    "CustomStringMerge": "Custom String Merge",
-    "SequentialImageLoader": "Sequential Image Loader",
-    "OpenAIImageModeration": "OpenAI Image Moderation",
-    "NSFWChecker": "NSFW Checker"
+    "ChatGPTNode":           "💬 AITEC ChatGPT Chat",
+    "SequentialMediaLoader": "🎞️ AITEC Media Loader",
+    "CustomStringMerge":     "🔗 AITEC String Merge",
+    "SequentialImageLoader": "🖼️ AITEC Image Loader",
+    "OpenAIImageModeration": "🛡️ AITEC Image Moderation",
+    "NSFWChecker":           "🚫 AITEC NSFW Checker"
 }
