@@ -36,13 +36,13 @@ llama-cpp-pythonはご自身の環境に合った.whlファイルからインス
 <img src="https://github.com/AI-TEC/images/blob/main/0002.jpg" alt="Node List">
 このToolkitには以下のノードが含まれています。  
 
-*   **💬 AITEC ChatGPT Chat**: ChatGPT APIを使用してテキストを生成します。
-*   **🛡️ AITEC Image Moderation**: OpenAIのモデレーションAPIを使用して画像を分析し、不適切なコンテンツを検出します。
+*   **💬 AITEC ChatGPT Chat**: OpenAIのAPIを使用してテキストを生成します。
+*   **🛡️ AITEC Image Moderation**: OpenAIのAPIを使用して画像を分析し、不適切なコンテンツを検出します。
 *   **🚫 AITEC NSFW Checker**: opennsfw2を使用して画像を分析し、不適切なコンテンツを検出します。
 *   **🖼️ AITEC Image Loader**: 指定されたフォルダから画像をロードします。
 *   **🎞️ AITEC Media Loader**: 指定されたフォルダから画像または動画をロードします。
 *   **🔗 AITEC String Merge**: 複数の文字列を結合します。
-*   **📦 AITEC LLM Loader**: ローカルLLMモデル（.gguf）を読み込み、Chatノードで再利用できるようにします。
+*   **📦 AITEC LLM Loader**: ローカルLLMモデルを読み込み、Chatノードで再利用できるようにします。
 *   **💬 AITEC LLM Chat**: ローカルLLMを使用してテキスト生成を行います。
 *   **📦 AITEC LLM Vision Loader**: 画像対応LLMモデルとmmprojを読み込み、Visionノードで再利用できるようにします。
 *   **🖼️ AITEC LLM Vision**: ローカルLLMを使用して画像解析・テキスト生成を行います。
@@ -54,7 +54,8 @@ llama-cpp-pythonはご自身の環境に合った.whlファイルからインス
 このノードはGPT-4.1を利用して、回答がtextで出力されます。  
 
 **⚠️APIキーは各自の責任で取り扱いに注意してご利用ください**  
-**⚠️APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**  
+**⚠️APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります** 
+**⚠️クレジットの消費量はご自身で管理ください**  
 
 *   **input text**: ChatGPT APIへ送るプロンプト
 *   **role setting**: ChatGPT APIへ送るシステムプロンプト
@@ -70,6 +71,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 検出されるスコアは目安として参考にしてください。  
 **⚠️APIキーは各自の責任で取り扱いに注意してご利用ください**  
 **⚠️APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**  
+**⚠️クレジットの消費量はご自身で管理ください**  
 
 *   **api_key**: OpenAIのAPIキー
 *   **output_format**: 結果の表示形式を選択  detail/simple/json
