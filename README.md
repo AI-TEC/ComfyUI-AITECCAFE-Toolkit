@@ -134,7 +134,7 @@ block_flaggedを設定することで、不適切コンテンツが検出され�
 ローカル環境のLLM（.gguf）モデルを読み込みます。  
 読み込まれたモデルは他のLLMノードで共有され、メモリ効率よく利用されます。
 
-*   **model_file**: 使用するモデルファイル（ComfyUI/models/llm）
+*   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
 *   **n_ctx**: コンテキストサイズ
 *   **n_gpu_layers**: GPUにオフロードするレイヤー数（-1で全て）
 
@@ -165,8 +165,8 @@ Loaderノードで読み込んだモデルを共有して使用するため、�
 画像対応LLM（Visionモデル）を読み込みます。  
 mmprojファイルと組み合わせて、画像入力を扱えるようにします。
 
-*   **model_file**: 使用するモデルファイル
-*   **mmproj_file**: Vision用プロジェクションモデル（mmproj）
+*   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
+*   **mmproj_file**: Vision用プロジェクションモデル（mmproj）（モデルの保存先:ComfyUI/models/llm）
 *   **n_ctx**: コンテキストサイズ
 *   **n_gpu_layers**: GPUレイヤー設定
 
