@@ -45,8 +45,9 @@ llama-cpp-pythonはご自身の環境に合った.whlファイルからインス
 *   **📦 AITEC LLM Loader**: ローカルLLMモデルを読み込み、Chatノードで再利用できるようにします。
 *   **💬 AITEC LLM Chat**: ローカルLLMを使用してテキスト生成を行います。
 *   **📦 AITEC LLM Vision Loader**: 画像対応LLMモデルとmmprojを読み込み、Visionノードで再利用できるようにします。
-*   **🖼️ AITEC LLM Vision**: ローカルLLMを使用して画像解析・テキスト生成を行います。
-
+*   **🖼️ AITEC LLM Vision**: ローカルLLMを使用して画像解析・テキスト生成を行います。 
+  
+    ※各種生成とLLMを同時に使用する際は、両方のモデルをロードできるだけのVRAMが無いとオーバーフローします。
 ---
 
 ## 💬 AITEC ChatGPT Chat
@@ -145,6 +146,8 @@ Image Moderationノードと違いAPIキーは不要で、ローカルで動作�
 例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)  
 *   https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive
 *   https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
+  
+    ※各種生成とLLMを同時に使用する際は、両方のモデルをロードできるだけのVRAMが無いとオーバーフローします。
 ---
 
 ## 💬 AITEC LLM Chat
@@ -182,6 +185,9 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)    
 *   https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive
 *   https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
+  
+    ※各種生成とLLMを同時に使用する際は、両方のモデルをロードできるだけのVRAMが無いとオーバーフローします。  
+      特に LLM Vision は LLM よりも重たくなります。
 ---
 
 ## 🖼️ AITEC LLM Vision
