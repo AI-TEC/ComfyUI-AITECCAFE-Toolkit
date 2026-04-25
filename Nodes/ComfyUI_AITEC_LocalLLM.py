@@ -353,6 +353,7 @@ class AITEC_LLM_Chat:
     RETURN_TYPES = ("STRING", "STRING", "STRING")
     RETURN_NAMES = ("text", "used_model", "status")
     FUNCTION = "run"
+    OUTPUT_NODE = True
     CATEGORY = "AITEC/LocalLLM"
 
     @classmethod
@@ -448,6 +449,9 @@ class AITEC_LLM_Vision:
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
                 "reset_kv_cache":    ("BOOLEAN", {"default": True,
                                                    "tooltip": "推論前にKVキャッシュをリセット。ONでコンテキスト枯渇を防止（Qwen3等の思考モデルに推奨）。OFFで会話履歴を保持。"}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff,
+                                 "control_after_generate": True,
+                                 "tooltip": "実行のたびに値を変えることでキャッシュをスキップして強制再実行します。"}),
             },
             "optional": {
                 "image1": ("IMAGE", {}),
@@ -460,25 +464,38 @@ class AITEC_LLM_Vision:
     RETURN_TYPES = ("STRING", "STRING", "STRING")
     RETURN_NAMES = ("text", "used_model", "status")
     FUNCTION = "run"
+    OUTPUT_NODE = True
     CATEGORY = "AITEC/LocalLLM"
 
     @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        return float("NaN")
+    def IS_CHANGED(cls, seed=0, **kwargs):
+        return seed
 
     def run(self, model: LLMModel, system_prompt: str, prompt: str,
             temperature: float, top_p: float, max_tokens: int,
             remove_think: bool, remove_chatml: bool, suppress_thinking: bool,
-            reset_kv_cache: bool = True,
+            reset_kv_cache: bool = True, seed: int = 0,
             image1=None, image2=None, image3=None, image4=None):
 
         try:
-            # KVキャッシュをリセット（Chatノードと同様の理由）
+            # Visionモデルのコンテキスト完全リセット
+            # chat_handler経由の画像エンコードでn_past等の内部状態が残るため
+            # reset()だけでは "Fatal Decode Error at Pos 0" が発生する
             if reset_kv_cache:
                 try:
-                    model.llm.reset()
-                except Exception:
-                    pass
+                    llm = model.llm
+                    # llama_cpp内部APIでKVキャッシュを完全クリア
+                    if hasattr(llm, '_ctx') and llm._ctx is not None:
+                        import llama_cpp.llama_cpp as _lib
+                        _lib.llama_kv_cache_clear(llm._ctx)
+                    # n_tokensとn_pastをリセット
+                    if hasattr(llm, 'n_tokens'):
+                        llm.n_tokens = 0
+                    if hasattr(llm, '_n_past'):
+                        llm._n_past = 0
+                    llm.reset()
+                except Exception as e:
+                    print(f"[AITEC_Vision] reset warning: {e}")
 
             messages = []
             final_system = _apply_nothink(system_prompt, suppress_thinking)
