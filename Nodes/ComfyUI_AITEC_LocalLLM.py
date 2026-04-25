@@ -172,7 +172,7 @@ class AITEC_LLM_Loader:
         return {
             "required": {
                 "model_file":   (model_list, {"default": model_list[0]}),
-                "n_ctx":        ("INT",  {"default": 16384, "min": 512, "max": 131072, "step": 512,
+                "n_ctx":        ("INT",  {"default": 4096, "min": 512, "max": 131072, "step": 512,
                                           "tooltip": "Context window size (Qwen3思考モデルは16384以上推奨)"}),
                 "n_gpu_layers": ("INT",  {"default": -1,   "min": -1,  "max": 200,   "step": 1,
                                           "tooltip": "-1 = Send all layers to the GPU"}),
