@@ -172,8 +172,8 @@ class AITEC_LLM_Loader:
         return {
             "required": {
                 "model_file":   (model_list, {"default": model_list[0]}),
-                "n_ctx":        ("INT",  {"default": 8192, "min": 512, "max": 131072, "step": 512,
-                                          "tooltip": "Context window size"}),
+                "n_ctx":        ("INT",  {"default": 16384, "min": 512, "max": 131072, "step": 512,
+                                          "tooltip": "Context window size (Qwen3思考モデルは16384以上推奨)"}),
                 "n_gpu_layers": ("INT",  {"default": -1,   "min": -1,  "max": 200,   "step": 1,
                                           "tooltip": "-1 = Send all layers to the GPU"}),
             },
@@ -240,7 +240,7 @@ class AITEC_LLM_Vision_Loader:
                 "model_file":   (model_list, {"default": model_list[0]}),
                 "mmproj_file":  (model_list, {"default": model_list[0],
                                               "tooltip": "Vision projection model (mmproj-*.gguf)"}),
-                "n_ctx":        ("INT",  {"default": 8192, "min": 512, "max": 131072, "step": 512}),
+                "n_ctx":        ("INT",  {"default": 4096, "min": 512, "max": 131072, "step": 512}),
                 "n_gpu_layers": ("INT",  {"default": -1,   "min": -1,  "max": 200,   "step": 1,
                                           "tooltip": "-1 = Send all layers to the GPU"}),
             },
@@ -345,6 +345,8 @@ class AITEC_LLM_Chat:
                                               "tooltip": "Remove repetitions of <|im_start|>assistant～<|im_end|> and return only the first response (Gemma4, etc.)"}),
                 "suppress_thinking": ("BOOLEAN", {"default": False,
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
+                "reset_kv_cache":    ("BOOLEAN", {"default": True,
+                                                   "tooltip": "推論前にKVキャッシュをリセット。ONでコンテキスト枯渇を防止（Qwen3等の思考モデルに推奨）。OFFで会話履歴を保持。"}),
             },
         }
 
@@ -360,12 +362,22 @@ class AITEC_LLM_Chat:
 
     def run(self, model: LLMModel, system_prompt: str, prompt: str,
             temperature: float, top_p: float, max_tokens: int,
-            remove_think: bool, remove_chatml: bool, suppress_thinking: bool):
+            remove_think: bool, remove_chatml: bool, suppress_thinking: bool,
+            reset_kv_cache: bool = True):
 
         if not prompt.strip():
             return ("", "", "error: The prompt is empty")
 
         try:
+            # KVキャッシュをリセットして毎回クリーンな状態で推論する
+            # Qwen3等の思考モデルは<think>ブロックで大量トークンを消費するため
+            # リセットしないと数回でコンテキスト枯渇し空レスポンスになる
+            if reset_kv_cache:
+                try:
+                    model.llm.reset()
+                except Exception:
+                    pass
+
             messages = []
             final_system = _apply_nothink(system_prompt, suppress_thinking)
             if final_system:
@@ -382,9 +394,18 @@ class AITEC_LLM_Chat:
             text = (response["choices"][0]["message"]["content"] or "").strip()
             finish = response["choices"][0].get("finish_reason", "")
 
+            # finish_reasonが空の場合はコンテキスト枯渇の可能性を警告
+            if not finish:
+                finish_status = "warning: finish_reason is empty. Context may be exhausted. Try increasing n_ctx."
+            else:
+                finish_status = _make_status(finish)
+
             text = _clean_output(text, remove_think=remove_think, remove_chatml=remove_chatml)
 
-            return (text, model.model_file, _make_status(finish))
+            if not text:
+                return ("", model.model_file, "warning: Empty response. Context may be exhausted. Try increasing n_ctx in Loader.")
+
+            return (text, model.model_file, finish_status)
 
         except Exception as e:
             return ("", getattr(model, "model_file", ""), f"error: {e}")
@@ -425,6 +446,8 @@ class AITEC_LLM_Vision:
                                               "tooltip": "Remove repetitions of <|im_start|>assistant～<|im_end|> and return only the first response (Gemma4, etc.)"}),
                 "suppress_thinking": ("BOOLEAN", {"default": False,
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
+                "reset_kv_cache":    ("BOOLEAN", {"default": True,
+                                                   "tooltip": "推論前にKVキャッシュをリセット。ONでコンテキスト枯渇を防止（Qwen3等の思考モデルに推奨）。OFFで会話履歴を保持。"}),
             },
             "optional": {
                 "image1": ("IMAGE", {}),
@@ -446,9 +469,17 @@ class AITEC_LLM_Vision:
     def run(self, model: LLMModel, system_prompt: str, prompt: str,
             temperature: float, top_p: float, max_tokens: int,
             remove_think: bool, remove_chatml: bool, suppress_thinking: bool,
+            reset_kv_cache: bool = True,
             image1=None, image2=None, image3=None, image4=None):
 
         try:
+            # KVキャッシュをリセット（Chatノードと同様の理由）
+            if reset_kv_cache:
+                try:
+                    model.llm.reset()
+                except Exception:
+                    pass
+
             messages = []
             final_system = _apply_nothink(system_prompt, suppress_thinking)
             if final_system:
@@ -475,9 +506,17 @@ class AITEC_LLM_Vision:
             text = (response["choices"][0]["message"]["content"] or "").strip()
             finish = response["choices"][0].get("finish_reason", "")
 
+            if not finish:
+                finish_status = "warning: finish_reason is empty. Context may be exhausted. Try increasing n_ctx."
+            else:
+                finish_status = _make_status(finish)
+
             text = _clean_output(text, remove_think=remove_think, remove_chatml=remove_chatml)
 
-            return (text, model.model_file, _make_status(finish))
+            if not text:
+                return ("", model.model_file, "warning: Empty response. Context may be exhausted. Try increasing n_ctx in Loader.")
+
+            return (text, model.model_file, finish_status)
 
         except Exception as e:
             return ("", getattr(model, "model_file", ""), f"error: {e}")
