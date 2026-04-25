@@ -140,7 +140,7 @@ Image Moderationノードと違いAPIキーは不要で、ローカルで動作�
 読み込まれたモデルは他のLLMノードで共有され、メモリ効率よく利用されます。  
 
 *   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
-*   **n_ctx**: コンテキストサイズ
+*   **n_ctx**: コンテキストサイズ（デフォルト4096：会話の履歴などが残るサイズ、thinkモードは大量に消費します）
 *   **n_gpu_layers**: GPUにオフロードするレイヤー数（-1で全て）
 
 例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)  
@@ -165,6 +165,7 @@ Loaderノードで読み込んだモデルを共有して使用するため、�
 *   **remove_think**: <think>タグの削除
 *   **remove_chatml**: ChatMLタグの整理
 *   **suppress_thinking**: 推論過程の出力抑制
+*   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
 
 - **接続例**:[AITEC LLM Loader]        → MODEL → [AITEC LLM Chat] 
 <img src="https://github.com/AI-TEC/images/blob/main/0013.jpg" alt="Connection example AITEC LLM">
@@ -179,7 +180,7 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 
 *   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
 *   **mmproj_file**: Vision用プロジェクションモデル（mmproj）（モデルの保存先:ComfyUI/models/llm）
-*   **n_ctx**: コンテキストサイズ
+*   **n_ctx**: コンテキストサイズ（デフォルト4096：会話の履歴などが残るサイズ、thinkモードは大量に消費します）
 *   **n_gpu_layers**: GPUレイヤー設定
 
 例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)    
@@ -205,6 +206,7 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 *   **remove_think**: <think>タグの削除
 *   **remove_chatml**: ChatMLタグの整理
 *   **suppress_thinking**: 推論抑制
+*   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
 *   **image1〜image4**: 入力画像
 
 - **接続例**:[AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]
