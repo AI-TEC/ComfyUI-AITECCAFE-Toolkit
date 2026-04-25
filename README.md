@@ -1,231 +1,230 @@
 # ComfyUI-AITECCAFE-Toolkit
 
-このリポジトリには、AITECCAFEによって開発されたComfyUI用のカスタムノードが含まれています。
+This repository contains custom nodes for ComfyUI developed by AITECCAFE.
 
-## note紹介
-[noteに投稿したノードの紹介文です](https://note.com/ai_tec/n/ne3d398fe9548)
+## note Introduction
+[Introduction article for the nodes posted on note](https://note.com/ai_tec/n/ne3d398fe9548)
 
-## インストール
+## Installation
 
 ### ComfyUI Manager
-1. ComfyUIを起動します。
-2. ComfyUI Managerを開きます。
-3. Custom Nodes Managerを開きます。
-4. "AITECCAFE"で検索するなどして、ComfyUI_AITECCAFE_Toolkitをインストールします。
+1. Launch ComfyUI.
+2. Open ComfyUI Manager.
+3. Open Custom Nodes Manager.
+4. Search for "AITECCAFE" and install ComfyUI_AITECCAFE_Toolkit.
     ![ComfyUI Manager](https://github.com/AI-TEC/images/blob/main/0001.jpg)
-5. ComfyUIを再起動します。
+5. Restart ComfyUI.
 
-### コマンドライン
-1. ComfyUIの `custom_nodes` フォルダに移動します。
-2. 以下のコマンドを使用して、このリポジトリをクローンします。
+### Command Line
+1. Move to the `custom_nodes` folder in ComfyUI.
+2. Clone this repository using the following command.
    ```bash
    git clone https://github.com/AI-TEC/ComfyUI-AITECCAFE-Toolkit
    ```
-3. 必要な依存関係をインストールします。
+3. Install the required dependencies.
    ```bash
    pip install -r ComfyUI-AITECCAFE-Toolkit/requirements.txt
    ```
-4. ComfyUIを再起動します。
+4. Restart ComfyUI.
 
-### llama-cpp-python インストール
-llama-cpp-pythonはご自身の環境に合った.whlファイルからインストールして頂くのが確実です。  
-- 例：.whlファイル配布元（JamePengさん）  
+### Installing llama-cpp-python
+It is recommended to install llama-cpp-python from a `.whl` file that matches your environment.  
+- Example: `.whl` file distribution source (by JamePeng)  
   https://github.com/JamePeng/llama-cpp-python
 
-## ノード一覧
+## Node List
 <img src="https://github.com/AI-TEC/images/blob/main/0002.jpg" alt="Node List">
-このToolkitには以下のノードが含まれています。  
+This Toolkit includes the following nodes.  
 
-*   **💬 AITEC ChatGPT Chat**: OpenAIのAPIを使用してテキストを生成します。
-*   **🛡️ AITEC Image Moderation**: OpenAIのAPIを使用して画像を分析し、不適切なコンテンツを検出します。
-*   **🚫 AITEC NSFW Checker**: opennsfw2を使用して画像を分析し、不適切なコンテンツを検出します。
-*   **🖼️ AITEC Image Loader**: 指定されたフォルダから画像をロードします。
-*   **🎞️ AITEC Media Loader**: 指定されたフォルダから画像または動画をロードします。
-*   **🔗 AITEC String Merge**: 複数の文字列を結合します。
-*   **📦 AITEC LLM Loader**: ローカルLLMモデルを読み込み、Chatノードで再利用できるようにします。
-*   **💬 AITEC LLM Chat**: ローカルLLMを使用してテキスト生成を行います。
-*   **📦 AITEC LLM Vision Loader**: 画像対応LLMモデルとmmprojを読み込み、Visionノードで再利用できるようにします。
-*   **🖼️ AITEC LLM Vision**: ローカルLLMを使用して画像解析・テキスト生成を行います。 
+*   **💬 AITEC ChatGPT Chat**: Generates text using the OpenAI API.
+*   **🛡️ AITEC Image Moderation**: Analyzes images using the OpenAI API and detects inappropriate content.
+*   **🚫 AITEC NSFW Checker**: Analyzes images using opennsfw2 and detects inappropriate content.
+*   **🖼️ AITEC Image Loader**: Loads images from a specified folder.
+*   **🎞️ AITEC Media Loader**: Loads images or videos from a specified folder.
+*   **🔗 AITEC String Merge**: Merges multiple strings.
+*   **📦 AITEC LLM Loader**: Loads a local LLM model and allows it to be reused in Chat nodes.
+*   **💬 AITEC LLM Chat**: Generates text using a local LLM.
+*   **📦 AITEC LLM Vision Loader**: Loads an image-capable LLM model and mmproj for reuse in Vision nodes.
+*   **🖼️ AITEC LLM Vision**: Performs image analysis and text generation using a local LLM. 
   
-    ※各種生成とLLMを同時に使用する際は、両方のモデルをロードできるだけのVRAMが無いとオーバーフローします。
+    ※ When using generation tasks and LLMs simultaneously, VRAM overflow may occur if there is not enough memory to load both models.
 ---
 
 ## 💬 AITEC ChatGPT Chat
 <img src="https://github.com/AI-TEC/images/blob/main/0003.jpg" alt="ChatGPT Text Generator">
-このノードはGPT-4.1を利用して、回答がtextで出力されます。  
+This node uses GPT-4.1 and outputs responses as text.  
 
-**⚠️APIキーは各自の責任で取り扱いに注意してご利用ください**  
-**⚠️APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります** 
-**⚠️クレジットの消費量はご自身で管理ください**  
+**⚠️ Please handle your API key responsibly and use it at your own risk**  
+**⚠️ If you distribute a workflow with the API key entered, others may be able to use your API key**  
+**⚠️ Please manage your own credit usage**  
 
-*   **input text**: ChatGPT APIへ送るプロンプト
-*   **role setting**: ChatGPT APIへ送るシステムプロンプト
-*   **api_key**: OpenAIのAPIキー
+*   **input text**: Prompt sent to the ChatGPT API
+*   **role setting**: System prompt sent to the ChatGPT API
+*   **api_key**: OpenAI API key
 
 ---
 
 ## 🛡️ AITEC Image Moderation
 <img src="https://github.com/AI-TEC/images/blob/main/0004.jpg" alt="OpenAI Image Moderation">
-このノードはOpenAIのomni-moderationを利用して、不適切コンテンツを検出しtextで出力します。  
+This node uses OpenAI's omni-moderation to detect inappropriate content and outputs the results as text.  
 
-block_flaggedを設定することで、不適切コンテンツが検出された場合にimage出力をブロックすることができます。  
-検出されるスコアは目安として参考にしてください。  
-**⚠️APIキーは各自の責任で取り扱いに注意してご利用ください**  
-**⚠️APIキーを入力した状態でワークフローを配布すると、他人がAPIキーを利用できる状態になります**  
-**⚠️クレジットの消費量はご自身で管理ください**  
+By enabling `block_flagged`, image output can be blocked when inappropriate content is detected.  
+Please use the detected scores only as a rough reference.  
+**⚠️ Please handle your API key responsibly and use it at your own risk**  
+**⚠️ If you distribute a workflow with the API key entered, others may be able to use your API key**  
+**⚠️ Please manage your own credit usage**  
 
-*   **api_key**: OpenAIのAPIキー
-*   **output_format**: 結果の表示形式を選択  detail/simple/json
-*   **language**: 言語の選択を行います  English/Japanese
-*   **block_flagged**: 不適切コンテンツが検出された場合image出力をブロックする
+*   **api_key**: OpenAI API key
+*   **output_format**: Select result display format  detail/simple/json
+*   **language**: Select language  English/Japanese
+*   **block_flagged**: Block image output when inappropriate content is detected
 
 ---
 
 *   ## 🚫 AITEC NSFW Checker
 <img src="https://github.com/AI-TEC/images/blob/main/0008.jpg" alt="NSFW Checker">
-このノードはopennsfw2を利用して、不適切コンテンツを検出しtextで出力します。  
+This node uses opennsfw2 to detect inappropriate content and outputs the results as text.  
 
-Image Moderationノードと違いAPIキーは不要で、ローカルで動作します。  
-不適切コンテンツが検出された場合にimage出力をブロックすることができます。  
-検出されるスコアは目安として参考にしてください。  
+Unlike the Image Moderation node, no API key is required and it runs locally.  
+Image output can be blocked when inappropriate content is detected.  
+Please use the detected scores only as a rough reference.  
 
-*   **block_nsfw**: NSFWをブロックするかどうか設定　pass through/block
-*   **use_threshold**: score基準でブロックするかどうか  enabled/disabled
-*   **threshold**: この値を超えた場合ブロックする  
-**block_nsfwの設定が優先されます**　
+*   **block_nsfw**: Set whether to block NSFW content  pass through/block
+*   **use_threshold**: Whether to block based on score threshold  enabled/disabled
+*   **threshold**: Block when the score exceeds this value  
+**The block_nsfw setting takes priority**　
 
 ---
 
 ## 🖼️ AITEC Image Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0007.jpg" alt="Sequential Image Loader">
-このノードは指定されたフォルダ内の画像をロードすることができます  
+This node can load images from a specified folder.  
 
-*   **folder_path**: 読み取りたい画像のあるフォルダのパス
-*   **seed**: incrementを指定するとフォルダ内の画像をファイル名順に読み出すことができる
-*   **include_subfolders**: サブフォルダの画像も読み出すかどうかを設定
+*   **folder_path**: Path to the folder containing the images to load
+*   **seed**: When set to increment, images in the folder can be loaded in filename order
+*   **include_subfolders**: Set whether to load images from subfolders
 
 ---
 
 ## 🎞️ AITEC Media Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0006.jpg" alt="Sequential Media Loader">
-このノードは指定されたフォルダ内のメディアをロードすることができます  
+This node can load media from a specified folder.  
 
-*   **folder_path**: 読み取りたいメディアのあるフォルダのパス
-*   **seed**: incrementを指定するとフォルダ内のメディアをファイル名順に読み出すことができる
-*   **include_subfolders**: サブフォルダの画像も読み出すかどうかを設定
-*   **frame_index**: 読み込みの開始フレームを設定
-*   **load_all_frames**: すべてのフレームを読み込むかを設定
-*   **max_frames**: 最大何フレームまで読み込むかを設定
-*   **frame_step**: 何フレームごとに読み込むかを設定
+*   **folder_path**: Path to the folder containing the media to load
+*   **seed**: When set to increment, media in the folder can be loaded in filename order
+*   **include_subfolders**: Set whether to load images from subfolders
+*   **frame_index**: Set the starting frame for loading
+*   **load_all_frames**: Set whether to load all frames
+*   **max_frames**: Set the maximum number of frames to load
+*   **frame_step**: Set the frame interval for loading
 
 ---
 
 ## 🔗 AITEC String Merge
 <img src="https://github.com/AI-TEC/images/blob/main/0005.jpg" alt="Custom String Merge">
-このノードは3つのStringを１番から順にマージします  
+This node merges three strings in order from 1 to 3.  
 
-*   **use_string1**: string1を利用するかを設定
-*   **use_string2**: string2を利用するかを設定
-*   **use_string3**: string3を利用するかを設定
-*   **string1**: 使用する文字列1
-*   **string2**: 使用する文字列2
-*   **string3**: 使用する文字列3
+*   **use_string1**: Set whether to use string1
+*   **use_string2**: Set whether to use string2
+*   **use_string3**: Set whether to use string3
+*   **string1**: String 1 to use
+*   **string2**: String 2 to use
+*   **string3**: String 3 to use
 
 ---
 
 ## 📦 AITEC LLM Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0009.jpg" alt="AITEC LLM Loader">
-ローカル環境のLLM（.gguf,.safetensors）モデルを読み込みます。  
+Loads local LLM models (`.gguf`, `.safetensors`).  
 
-読み込まれたモデルは他のLLMノードで共有され、メモリ効率よく利用されます。  
+Loaded models are shared across other LLM nodes for efficient memory usage.  
 
-*   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
-*   **n_ctx**: コンテキストサイズ（デフォルト4096：会話の履歴などが残るサイズ、thinkモードは大量に消費します）
-*   **n_gpu_layers**: GPUにオフロードするレイヤー数（-1で全て）
+*   **model_file**: Model file to use (model location: `ComfyUI/models/llm`)
+*   **n_ctx**: Context size (default: 4096; conversation history and think mode consume this heavily)
+*   **n_gpu_layers**: Number of layers offloaded to GPU (`-1` for all)
 
-例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)  
+Example: `.gguf` format is recommended when running alongside generation tasks (by HauhauCS)  
 *   https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive
 *   https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
   
-    ※各種生成とLLMを同時に使用する際は、両方のモデルをロードできるだけのVRAMが無いとオーバーフローします。
+    ※ When using generation tasks and LLMs simultaneously, VRAM overflow may occur if there is not enough memory to load both models.
 ---
 
 ## 💬 AITEC LLM Chat
 <img src="https://github.com/AI-TEC/images/blob/main/0010.jpg" alt="AITEC LLM Chat">
-ローカルLLMを使用してテキスト生成を行います。  
+Generates text using a local LLM.  
 
-Loaderノードで読み込んだモデルを共有して使用するため、複数配置してもメモリ使用量は増えません。  
+Since the model loaded by the Loader node is shared, memory usage does not increase even if multiple nodes are added.  
 
-*   **model**: Loaderからのモデル入力
-*   **system_prompt**: システムプロンプト
-*   **prompt**: 入力テキスト
-*   **temperature**: 出力のランダム性
-*   **top_p**: トークン選択の確率制御
-*   **max_tokens**: 最大生成トークン数
-*   **remove_think**: <think>タグの削除
-*   **remove_chatml**: ChatMLタグの整理
-*   **suppress_thinking**: 推論過程の出力抑制
-*   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
+*   **model**: Model input from Loader
+*   **system_prompt**: System prompt
+*   **prompt**: Input text
+*   **temperature**: Randomness of output
+*   **top_p**: Probability control for token selection
+*   **max_tokens**: Maximum number of generated tokens
+*   **remove_think**: Remove `<think>` tags
+*   **remove_chatml**: Clean up ChatML tags
+*   **suppress_thinking**: Suppress reasoning process output
+*   **reset_kv_cache**: Reset the KV cache before inference when ON (each inference becomes independent and prevents context exhaustion)
 
-- **接続例**:[AITEC LLM Loader]        → MODEL → [AITEC LLM Chat] 
+- **Connection Example**: [AITEC LLM Loader] → MODEL → [AITEC LLM Chat]  
 <img src="https://github.com/AI-TEC/images/blob/main/0013.jpg" alt="Connection example AITEC LLM">
 
 ---
 
 ## 📦 AITEC LLM Vision Loader
 <img src="https://github.com/AI-TEC/images/blob/main/0011.jpg" alt="AITEC LLM Vision Loader">
-画像対応LLM（Visionモデル）と mmprojファイル を読み込みます。（.gguf,.safetensors）  
+Loads image-capable LLMs (Vision models) and mmproj files (`.gguf`, `.safetensors`).  
 
-mmprojファイルと組み合わせて、画像入力を扱えるようにします。  
+By combining with an mmproj file, image input becomes available.  
 
-*   **model_file**: 使用するモデルファイル（モデルの保存先:ComfyUI/models/llm）
-*   **mmproj_file**: Vision用プロジェクションモデル（mmproj）（モデルの保存先:ComfyUI/models/llm）
-*   **n_ctx**: コンテキストサイズ（デフォルト4096：会話の履歴などが残るサイズ、thinkモードは大量に消費します）
-*   **n_gpu_layers**: GPUレイヤー設定
+*   **model_file**: Model file to use (model location: `ComfyUI/models/llm`)
+*   **mmproj_file**: Projection model for Vision (mmproj) (model location: `ComfyUI/models/llm`)
+*   **n_ctx**: Context size (default: 4096; conversation history and think mode consume this heavily)
+*   **n_gpu_layers**: GPU layer settings
 
-例：生成と同時に動かす場合は.gguf形式がおすすめです(HauhauCSさん)    
+Example: `.gguf` format is recommended when running alongside generation tasks (by HauhauCS)  
 *   https://huggingface.co/HauhauCS/Gemma-4-E4B-Uncensored-HauhauCS-Aggressive
 *   https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
   
-    ※各種生成とLLMを同時に使用する際は、両方のモデルをロードできるだけのVRAMが無いとオーバーフローします。  
-      特に LLM Vision は LLM よりも重たくなります。
+    ※ When using generation tasks and LLMs simultaneously, VRAM overflow may occur if there is not enough memory to load both models.  
+      In particular, LLM Vision is heavier than regular LLMs.
 ---
 
 ## 🖼️ AITEC LLM Vision
 <img src="https://github.com/AI-TEC/images/blob/main/0012.jpg" alt="AITEC LLM Vision">
-画像を入力としてLLMによる解析・説明生成を行います。  
+Performs analysis and description generation using images as input for the LLM.  
 
-最大4枚までの画像入力に対応しています。  
+Supports up to 4 image inputs.  
 
-*   **model**: Vision Loaderからのモデル入力
-*   **system_prompt**: システムプロンプト
-*   **prompt**: 指示文
-*   **temperature**: 出力のランダム性
-*   **top_p**: 確率制御
-*   **max_tokens**: 最大トークン数
-*   **remove_think**: <think>タグの削除
-*   **remove_chatml**: ChatMLタグの整理
-*   **suppress_thinking**: 推論抑制
-*   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
-*   **seed**: 入力画像とプロンプトに変化がなくても動作させるために使用します（同じseed値で出力が同じになるわけではありません）
-*   **control_after_generate**: fix以外を選択することで入力画像とプロンプトに変化がなくても動作します
-*   **image1〜image4**: 入力画像
+*   **model**: Model input from Vision Loader
+*   **system_prompt**: System prompt
+*   **prompt**: Instruction text
+*   **temperature**: Randomness of output
+*   **top_p**: Probability control
+*   **max_tokens**: Maximum number of tokens
+*   **remove_think**: Remove `<think>` tags
+*   **remove_chatml**: Clean up ChatML tags
+*   **suppress_thinking**: Suppress reasoning
+*   **reset_kv_cache**: Reset the KV cache before inference when ON (each inference becomes independent and prevents context exhaustion)
+*   **seed**: Used to force execution even when the input image and prompt have not changed (same seed does not guarantee identical output)
+*   **control_after_generate**: Select anything other than fix to execute even when the input image and prompt have not changed
+*   **image1〜image4**: Input images
 
-- **接続例**:[AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]
+- **Connection Example**: [AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]  
 <img src="https://github.com/AI-TEC/images/blob/main/0014.jpg" alt="Connection example AITEC LLM Vision">
 
-## 依存関係
+## Dependencies
 
 - `openai`
 - `opencv-python`
 - `opennsfw2`
 - `tensorflow`
 - `llama-cpp-python`  
-  .whlファイルはJamePengさんが配布されています。  
+  `.whl` files are distributed by JamePeng.  
   https://github.com/JamePeng/llama-cpp-python
 
-## ライセンス
+## License
 
 MIT License  
-[LICENSE](LICENSE)ファイルを参照してください。
-
+Please refer to the [LICENSE](LICENSE) file.
