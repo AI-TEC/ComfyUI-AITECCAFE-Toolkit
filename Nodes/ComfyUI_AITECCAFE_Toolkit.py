@@ -14,9 +14,9 @@ import opennsfw2 as n2
 import tensorflow
 
 # ========================================
-# ChatGPTNode
+# AITEC_ChatGPT_Chat
 # ========================================
-class ChatGPTNode:
+class AITEC_ChatGPT_Chat:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -73,9 +73,9 @@ class ChatGPTNode:
 
 
 # ========================================
-# SequentialMediaLoader
+# AITEC_Media_Loader
 # ========================================
-class SequentialMediaLoader:
+class AITEC_Media_Loader:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -255,9 +255,9 @@ class SequentialMediaLoader:
 
 
 # ========================================
-# CustomStringMergeNode
+# AITEC_String_MergeNode
 # ========================================
-class CustomStringMergeNode:
+class AITEC_String_MergeNode:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -295,9 +295,9 @@ class CustomStringMergeNode:
 
 
 # ========================================
-# SequentialImageLoader
+# AITEC_Image_Loader
 # ========================================
-class SequentialImageLoader:
+class AITEC_Image_Loader:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -359,9 +359,9 @@ class SequentialImageLoader:
 
 
 # ========================================
-# OpenAIImageModeration
+# AITEC_Image_Moderation
 # ========================================
-class OpenAIImageModeration:
+class AITEC_Image_Moderation:
     
     #A node that performs image moderation using the OpenAI omni-moderation-latest model.
     
@@ -525,9 +525,9 @@ class OpenAIImageModeration:
 
 
 # ========================================
-# NSFWChecker
+# AITEC_NSFW_Checker
 # ========================================
-class NSFWChecker:
+class AITEC_NSFW_Checker:
     """
     A node that checks images/videos for NSFW content using opennsfw2.
     """
@@ -679,19 +679,19 @@ class NSFWChecker:
 # ノードマッピング(統合版)
 # ========================================
 NODE_CLASS_MAPPINGS = {
-    "ChatGPTNode":           ChatGPTNode,
-    "SequentialMediaLoader": SequentialMediaLoader,
-    "CustomStringMerge":     CustomStringMergeNode,
-    "SequentialImageLoader": SequentialImageLoader,
-    "OpenAIImageModeration": OpenAIImageModeration,
-    "NSFWChecker":           NSFWChecker
+    "AITEC_ChatGPT_Chat":     AITEC_ChatGPT_Chat,
+    "AITEC_Media_Loader":     AITEC_Media_Loader,
+    "AITEC_String_Merge":     AITEC_String_MergeNode,
+    "AITEC_Image_Loader":     AITEC_Image_Loader,
+    "AITEC_Image_Moderation": AITEC_Image_Moderation,
+    "AITEC_NSFW_Checker":     AITEC_NSFW_Checker
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ChatGPTNode":           "💬 AITEC ChatGPT Chat",
-    "SequentialMediaLoader": "🎞️ AITEC Media Loader",
-    "CustomStringMerge":     "🔗 AITEC String Merge",
-    "SequentialImageLoader": "🖼️ AITEC Image Loader",
-    "OpenAIImageModeration": "🛡️ AITEC Image Moderation",
-    "NSFWChecker":           "🚫 AITEC NSFW Checker"
+    "AITEC_ChatGPT_Chat":     "💬 AITEC ChatGPT Chat",
+    "AITEC_Media_Loader":     "🎞️ AITEC Media Loader",
+    "AITEC_String_Merge":     "🔗 AITEC String Merge",
+    "AITEC_Image_Loader":     "🖼️ AITEC Image Loader",
+    "AITEC_Image_Moderation": "🛡️ AITEC Image Moderation",
+    "AITEC_NSFW_Checker":     "🚫 AITEC NSFW Checker"
 }
