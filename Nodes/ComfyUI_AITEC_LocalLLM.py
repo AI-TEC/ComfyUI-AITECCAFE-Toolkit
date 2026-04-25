@@ -346,7 +346,7 @@ class AITEC_LLM_Chat:
                 "suppress_thinking": ("BOOLEAN", {"default": False,
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
                 "reset_kv_cache":    ("BOOLEAN", {"default": True,
-                                                   "tooltip": "推論前にKVキャッシュをリセット。ONでコンテキスト枯渇を防止（Qwen3等の思考モデルに推奨）。OFFで会話履歴を保持。"}),
+                                                   "tooltip": "Reset the KV cache before inference. Set to ON to prevent context exhaustion (recommended for reasoning models such as Qwen3). Set to OFF to retain conversation history."}),
             },
         }
 
@@ -370,9 +370,9 @@ class AITEC_LLM_Chat:
             return ("", "", "error: The prompt is empty")
 
         try:
-            # KVキャッシュをリセットして毎回クリーンな状態で推論する
-            # Qwen3等の思考モデルは<think>ブロックで大量トークンを消費するため
-            # リセットしないと数回でコンテキスト枯渇し空レスポンスになる
+            # Reset the KV cache to perform inference from a clean state every time
+            # Thinking models such as Qwen3 consume a large number of tokens in the <think> block, so
+            # If you don't reset it, the context will run out after a few requests and return an empty response.
             if reset_kv_cache:
                 try:
                     model.llm.reset()
@@ -395,7 +395,7 @@ class AITEC_LLM_Chat:
             text = (response["choices"][0]["message"]["content"] or "").strip()
             finish = response["choices"][0].get("finish_reason", "")
 
-            # finish_reasonが空の場合はコンテキスト枯渇の可能性を警告
+            # If `finish_reason` is empty, warn of a possible context depletion
             if not finish:
                 finish_status = "warning: finish_reason is empty. Context may be exhausted. Try increasing n_ctx."
             else:
@@ -448,10 +448,10 @@ class AITEC_LLM_Vision:
                 "suppress_thinking": ("BOOLEAN", {"default": False,
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
                 "reset_kv_cache":    ("BOOLEAN", {"default": True,
-                                                   "tooltip": "推論前にKVキャッシュをリセット。ONでコンテキスト枯渇を防止（Qwen3等の思考モデルに推奨）。OFFで会話履歴を保持。"}),
+                                                   "tooltip": "Reset the KV cache before inference. Set to ON to prevent context exhaustion (recommended for reasoning models such as Qwen3). Set to OFF to retain conversation history."}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff,
                                  "control_after_generate": True,
-                                 "tooltip": "実行のたびに値を変えることでキャッシュをスキップして強制再実行します。"}),
+                                 "tooltip": "Changing the value each time the code runs bypasses the cache and forces a re-execution."}),
             },
             "optional": {
                 "image1": ("IMAGE", {}),
@@ -478,17 +478,17 @@ class AITEC_LLM_Vision:
             image1=None, image2=None, image3=None, image4=None):
 
         try:
-            # Visionモデルのコンテキスト完全リセット
-            # chat_handler経由の画像エンコードでn_past等の内部状態が残るため
-            # reset()だけでは "Fatal Decode Error at Pos 0" が発生する
+            # Complete reset of the Vision model's context
+            # Because internal state such as `n_past` remains after image encoding via the chat_handler
+            # If you only call `reset()`, a “Fatal Decode Error at Pos 0” occurs
             if reset_kv_cache:
                 try:
                     llm = model.llm
-                    # llama_cpp内部APIでKVキャッシュを完全クリア
+                    # Completely clear the KV cache using the llama_cpp internal API
                     if hasattr(llm, '_ctx') and llm._ctx is not None:
                         import llama_cpp.llama_cpp as _lib
                         _lib.llama_kv_cache_clear(llm._ctx)
-                    # n_tokensとn_pastをリセット
+                    # Reset n_tokens and n_past
                     if hasattr(llm, 'n_tokens'):
                         llm.n_tokens = 0
                     if hasattr(llm, '_n_past'):
