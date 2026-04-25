@@ -207,6 +207,8 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 *   **remove_chatml**: ChatMLタグの整理
 *   **suppress_thinking**: 推論抑制
 *   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
+*   **seed**: 入力画像とプロンプトに変化がなくても動作させるために使用します（同じseed値で出力が同じになるわけではありません）
+*   **control_after_generate**: fix以外を選択することで入力画像とプロンプトに変化がなくても動作します
 *   **image1〜image4**: 入力画像
 
 - **接続例**:[AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]
