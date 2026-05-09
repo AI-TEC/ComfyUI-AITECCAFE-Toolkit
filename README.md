@@ -3,9 +3,6 @@
 This repository contains custom nodes for ComfyUI developed by AITECCAFE.  
 日本語README → [README JA](README_JA.md)
 
-## note Introduction
-[Introduction article for the nodes posted on note](https://note.com/ai_tec/n/ne3d398fe9548)
-
 ## Installation
 
 ### ComfyUI Manager
