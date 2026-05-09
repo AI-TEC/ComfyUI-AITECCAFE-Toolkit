@@ -152,6 +152,28 @@ class LLMModel:
         kind = "Vision" if self.has_vision else "Chat"
         return f"<LLMModel [{kind}] {self.model_file}>"
 
+    def unload(self):
+        """Unload the model and clear the Loader's cache as well"""
+        # Free llama_cpp resources
+        if self.llm is not None:
+            try:
+                self.llm.close()
+            except Exception:
+                pass
+            self.llm = None
+
+        # Clear the cache for both loaders (regardless of which one they belong to)
+        AITEC_LLM_Loader._cache.clear()
+        AITEC_LLM_Vision_Loader._cache.clear()
+
+        # Free up GPU/CPU memory
+        gc.collect()
+        try:
+            torch.cuda.empty_cache()
+        except Exception:
+            pass
+
+
 
 # ---------------------------------------------------------------------------
 # Node 1: AITEC_LLM_Loader  (LLM Loader)
@@ -183,6 +205,9 @@ class AITEC_LLM_Loader:
     RETURN_NAMES = ("model",)
     FUNCTION = "load"
     CATEGORY = "AITEC/LocalLLM"
+
+    def IS_CHANGED(cls, **kwargs):
+        return float("NaN")
 
     def _cache_key(self, model_file, n_ctx, n_gpu_layers):
         return f"chat|{model_file}|{n_ctx}|{n_gpu_layers}"
@@ -250,6 +275,9 @@ class AITEC_LLM_Vision_Loader:
     RETURN_NAMES = ("model",)
     FUNCTION = "load"
     CATEGORY = "AITEC/LocalLLM"
+
+    def IS_CHANGED(cls, **kwargs):
+        return float("NaN")
 
     def _cache_key(self, model_file, mmproj_file, n_ctx, n_gpu_layers):
         return f"vision|{model_file}|{mmproj_file}|{n_ctx}|{n_gpu_layers}"
@@ -347,6 +375,8 @@ class AITEC_LLM_Chat:
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
                 "reset_kv_cache":    ("BOOLEAN", {"default": True,
                                                    "tooltip": "Reset the KV cache before inference. Set to ON to prevent context exhaustion (recommended for reasoning models such as Qwen3). Set to OFF to retain conversation history."}),
+                "unload_after_run": ("BOOLEAN", {"default": False,
+                                                   "tooltip": "Unload the model after execution to free up VRAM. You will need to reload it when you run it again."}),
             },
         }
 
@@ -364,7 +394,10 @@ class AITEC_LLM_Chat:
     def run(self, model: LLMModel, system_prompt: str, prompt: str,
             temperature: float, top_p: float, max_tokens: int,
             remove_think: bool, remove_chatml: bool, suppress_thinking: bool,
-            reset_kv_cache: bool = True):
+            reset_kv_cache: bool = True, unload_after_run: bool = False):
+
+        if model.llm is None:
+            return ("", model.model_file, "error: The model has been unloaded. Please rerun the Loader.")
 
         if not prompt.strip():
             return ("", "", "error: The prompt is empty")
@@ -404,9 +437,16 @@ class AITEC_LLM_Chat:
             text = _clean_output(text, remove_think=remove_think, remove_chatml=remove_chatml)
 
             if not text:
-                return ("", model.model_file, "warning: Empty response. Context may be exhausted. Try increasing n_ctx in Loader.")
+                result = ("", model.model_file, "warning: Empty response. Context may be exhausted. Try increasing n_ctx in Loader.")
+                if unload_after_run:
+                    model.unload()
+                return result
 
-            return (text, model.model_file, finish_status)
+            result = (text, model.model_file, finish_status)
+            if unload_after_run:
+                print(f"[AITEC_Chat] Unloading model: {model.model_file}")
+                model.unload()
+            return result
 
         except Exception as e:
             return ("", getattr(model, "model_file", ""), f"error: {e}")
@@ -449,6 +489,8 @@ class AITEC_LLM_Vision:
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
                 "reset_kv_cache":    ("BOOLEAN", {"default": True,
                                                    "tooltip": "Reset the KV cache before inference. Set to ON to prevent context exhaustion (recommended for reasoning models such as Qwen3). Set to OFF to retain conversation history."}),
+                "unload_after_run": ("BOOLEAN", {"default": False,
+                                                   "tooltip": "Unload the model after execution to free up VRAM. You will need to reload it when you run it again."}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff,
                                  "control_after_generate": True,
                                  "tooltip": "Changing the value each time the code runs bypasses the cache and forces a re-execution."}),
@@ -474,10 +516,13 @@ class AITEC_LLM_Vision:
     def run(self, model: LLMModel, system_prompt: str, prompt: str,
             temperature: float, top_p: float, max_tokens: int,
             remove_think: bool, remove_chatml: bool, suppress_thinking: bool,
-            reset_kv_cache: bool = True, seed: int = 0,
+            reset_kv_cache: bool = True, unload_after_run: bool = False, seed: int = 0,
             image1=None, image2=None, image3=None, image4=None):
 
         try:
+            if model.llm is None:
+                return ("", model.model_file, "error: The model has been unloaded. Please rerun the Loader.")
+
             # Complete reset of the Vision model's context
             # Because internal state such as `n_past` remains after image encoding via the chat_handler
             # If you only call `reset()`, a “Fatal Decode Error at Pos 0” occurs
@@ -531,9 +576,16 @@ class AITEC_LLM_Vision:
             text = _clean_output(text, remove_think=remove_think, remove_chatml=remove_chatml)
 
             if not text:
-                return ("", model.model_file, "warning: Empty response. Context may be exhausted. Try increasing n_ctx in Loader.")
+                result = ("", model.model_file, "warning: Empty response. Context may be exhausted. Try increasing n_ctx in Loader.")
+                if unload_after_run:
+                    model.unload()
+                return result
 
-            return (text, model.model_file, finish_status)
+            result = (text, model.model_file, finish_status)
+            if unload_after_run:
+                print(f"[AITEC_Chat] Unloading model: {model.model_file}")
+                model.unload()
+            return result
 
         except Exception as e:
             return ("", getattr(model, "model_file", ""), f"error: {e}")
