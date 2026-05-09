@@ -49,6 +49,7 @@ This Toolkit includes the following nodes.
 *   **🖼️ AITEC LLM Vision**: Performs image analysis and text generation using a local LLM. 
   
     ※ When using generation tasks and LLMs simultaneously, VRAM overflow may occur if there is not enough memory to load both models.
+    
 ---
 
 ## 💬 AITEC ChatGPT Chat
@@ -149,6 +150,7 @@ Example: `.gguf` format is recommended when running alongside generation tasks (
 *   https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
   
     ※ When using generation tasks and LLMs simultaneously, VRAM overflow may occur if there is not enough memory to load both models.
+    
 ---
 
 ## 💬 AITEC LLM Chat
@@ -167,6 +169,7 @@ Since the model loaded by the Loader node is shared, memory usage does not incre
 *   **remove_chatml**: Clean up ChatML tags
 *   **suppress_thinking**: Suppress reasoning process output
 *   **reset_kv_cache**: Reset the KV cache before inference when ON (each inference becomes independent and prevents context exhaustion)
+*   **unload_after_run**: When set to ON, the LLM model is unloaded after output (if you are referencing multiple deployments, see “How to unload LLM models” below)
 
 - **Connection Example**: [AITEC LLM Loader] → MODEL → [AITEC LLM Chat]  
 <img src="https://github.com/AI-TEC/images/blob/main/0013.jpg" alt="Connection example AITEC LLM">
@@ -208,12 +211,25 @@ Supports up to 4 image inputs.
 *   **remove_chatml**: Clean up ChatML tags
 *   **suppress_thinking**: Suppress reasoning
 *   **reset_kv_cache**: Reset the KV cache before inference when ON (each inference becomes independent and prevents context exhaustion)
+*   **unload_after_run**: When set to ON, the LLM model is unloaded after output (if you are referencing multiple deployments, see “How to unload LLM models” below)
 *   **seed**: Used to force execution even when the input image and prompt have not changed (same seed does not guarantee identical output)
 *   **control_after_generate**: Select anything other than fix to execute even when the input image and prompt have not changed
 *   **image1〜image4**: Input images
 
 - **Connection Example**: [AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]  
 <img src="https://github.com/AI-TEC/images/blob/main/0014.jpg" alt="Connection example AITEC LLM Vision">
+
+---
+
+## How to Use Model Unload with LLMs
+If you deploy multiple LLM Chat or LLM Vision instances and want to unload models on each of them,  
+please deploy multiple model loaders for each LLM.  
+(If there is only one model loader, the process will continue without loading a model after the first unload.)
+
+- **Connection Examples**:
+<img src="https://github.com/AI-TEC/images/blob/main/0015.jpg" alt="Connection example multiple LLM Connect">
+
+---
 
 ## Dependencies
 
