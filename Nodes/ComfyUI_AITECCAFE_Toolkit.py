@@ -84,14 +84,14 @@ class AITEC_Media_Loader:
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                 "include_subfolders": ("BOOLEAN", {"default": False}),
                 "frame_index": ("INT", {"default": 0, "min": 0, "max": 9999, "step": 1}),
-                "load_all_frames": ("BOOLEAN", {"default": False}),
-                "max_frames": ("INT", {"default": 100, "min": 1, "max": 1000, "step": 1}),
+                "load_all_frames": ("BOOLEAN", {"default": True}),
+                "max_frames": ("INT", {"default": 1000, "min": 1, "max": 9999, "step": 1}),
                 "frame_step": ("INT", {"default": 1, "min": 1, "max": 10, "step": 1}),
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "INT")
-    RETURN_NAMES = ("image", "mask", "filename", "total_frames")
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING", "INT", "FLOAT")
+    RETURN_NAMES = ("image", "mask", "filename", "total_frames", "fps")
     FUNCTION = "load_sequential_media"
     CATEGORY = "AITECCAFE-Toolkit"
 
@@ -129,19 +129,20 @@ class AITEC_Media_Loader:
             # Processing image files
             image, mask = self._load_image(selected_file)
             total_frames = 1
+            fps = 1
             print(f"Selected image: {filename} (Seed: {seed}, Index: {index})")
             
         elif file_ext in video_extensions:
             if load_all_frames:
                 # Load all frames of the video
-                image, mask, total_frames = self._load_all_video_frames(selected_file, max_frames, frame_step)
+                image, mask, total_frames, fps = self._load_all_video_frames(selected_file, max_frames, frame_step)
                 print(f"Selected video (all frames): {filename} (Seed: {seed}, Index: {index}, Loaded frames: {image.shape[0]}/{total_frames})")
             else:
                 # Import Single Frame
-                image, mask, total_frames = self._load_video_frame(selected_file, frame_index)
+                image, mask, total_frames, fps = self._load_video_frame(selected_file, frame_index)
                 print(f"Selected video (single frame): {filename} (Seed: {seed}, Index: {index}, Frame: {frame_index}/{total_frames-1})")
         
-        return (image, mask, filename, total_frames)
+        return (image, mask, filename, total_frames, fps)
     
     def _load_image(self, image_path):
         """Load an image file"""
@@ -159,6 +160,7 @@ class AITEC_Media_Loader:
     def _load_video_frame(self, video_path, frame_index):
         """Load a specific frame from a video file"""
         cap = cv2.VideoCapture(video_path)
+        fps = float(round(cap.get(cv2.CAP_PROP_FPS)))
         
         if not cap.isOpened():
             raise ValueError(f"Could not open video file: {video_path}")
@@ -194,11 +196,12 @@ class AITEC_Media_Loader:
         mask_np = frame_gray.astype(np.float32) / 255.0
         mask_tensor = torch.from_numpy(mask_np)[None,]
         
-        return image_tensor, mask_tensor, total_frames
+        return image_tensor, mask_tensor, total_frames, fps
     
     def _load_all_video_frames(self, video_path, max_frames, frame_step):
         """Load all frames from a video file"""
         cap = cv2.VideoCapture(video_path)
+        fps = float(round(cap.get(cv2.CAP_PROP_FPS)))
         
         if not cap.isOpened():
             raise ValueError(f"Could not open video file: {video_path}")
@@ -251,7 +254,7 @@ class AITEC_Media_Loader:
         
         print(f"Loaded {len(frames)} frames from video (step: {frame_step})")
         
-        return image_tensor, mask_tensor, total_frames
+        return image_tensor, mask_tensor, total_frames, fps
 
 
 # ========================================
