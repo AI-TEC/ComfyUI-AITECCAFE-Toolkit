@@ -2,9 +2,6 @@
 
 このリポジトリには、AITECCAFEによって開発されたComfyUI用のカスタムノードが含まれています。
 
-## note紹介
-[noteに投稿したノードの紹介文です](https://note.com/ai_tec/n/ne3d398fe9548)
-
 ## インストール
 
 ### ComfyUI Manager
@@ -166,6 +163,7 @@ Loaderノードで読み込んだモデルを共有して使用するため、�
 *   **remove_chatml**: ChatMLタグの整理
 *   **suppress_thinking**: 推論過程の出力抑制
 *   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
+*   **unload_after_run**: ONで出力後にLLMモデルをアンロードします(複数配置参照する場合は、下部のLLMのモデルアンロード利用方法参照)
 
 - **接続例**:[AITEC LLM Loader]        → MODEL → [AITEC LLM Chat] 
 <img src="https://github.com/AI-TEC/images/blob/main/0013.jpg" alt="Connection example AITEC LLM">
@@ -207,12 +205,23 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 *   **remove_chatml**: ChatMLタグの整理
 *   **suppress_thinking**: 推論抑制
 *   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
+*   **unload_after_run**: ONで出力後にLLMモデルをアンロードします(複数配置参照する場合は、下部のLLMのモデルアンロード利用方法参照)
 *   **seed**: 入力画像とプロンプトに変化がなくても動作させるために使用します（同じseed値で出力が同じになるわけではありません）
 *   **control_after_generate**: fix以外を選択することで入力画像とプロンプトに変化がなくても動作します
 *   **image1〜image4**: 入力画像
 
 - **接続例**:[AITEC LLM Vision Loader] → MODEL → [AITEC LLM Vision]
 <img src="https://github.com/AI-TEC/images/blob/main/0014.jpg" alt="Connection example AITEC LLM Vision">
+---
+
+## LLMのモデルアンロード利用方法
+複数のLLM ChatやLLM Visionを配置して、それぞれでモデルアンロードする場合は  
+それぞれのLLMのためにモデルローダーも複数配置してください。  
+（モデルローダーが1つだと、最初のアンロード後にモデルがロードされることなく進みます）
+
+- **接続例**:
+<img src="https://github.com/AI-TEC/images/blob/main/0015.jpg" alt="Connection example multiple LLM Connect">
+---
 
 ## 依存関係
 
