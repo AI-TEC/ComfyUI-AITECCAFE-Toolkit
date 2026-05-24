@@ -206,7 +206,6 @@ mmprojファイルと組み合わせて、画像入力を扱えるようにし�
 *   **remove_think**: <think>タグの削除
 *   **remove_chatml**: ChatMLタグの整理
 *   **suppress_thinking**: 推論抑制
-*   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
 *   **unload_after_run**: ONで出力後にLLMモデルをアンロードします(複数配置参照する場合は、下部のLLMのモデルアンロード利用方法参照)
 *   **seed**: 入力画像とプロンプトに変化がなくても動作させるために使用します（同じseed値で出力が同じになるわけではありません）
 *   **control_after_generate**: fix以外を選択することで入力画像とプロンプトに変化がなくても動作します
