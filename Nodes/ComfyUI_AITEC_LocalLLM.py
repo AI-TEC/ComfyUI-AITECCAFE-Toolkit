@@ -160,6 +160,7 @@ class LLMModel:
                 self.llm.close()
             except Exception:
                 pass
+            del self.llm
             self.llm = None
 
         # Clear the cache for both loaders (regardless of which one they belong to)
@@ -235,7 +236,6 @@ class AITEC_LLM_Loader:
             model_path=str(model_path),
             n_ctx=n_ctx,
             n_gpu_layers=n_gpu_layers,
-            chat_format="chatml",
             verbose=False,
         )
         wrapper = LLMModel(llm, model_file, has_vision=False)
@@ -306,8 +306,7 @@ class AITEC_LLM_Vision_Loader:
 
         # Vision chat handler を探す
         chat_handler = None
-        for handler_name in ("Qwen25VLChatHandler", "Qwen3VLChatHandler",
-                             "MoondreamChatHandler", "LlavaImageChatHandler"):
+        for handler_name in ("MTMDChatHandler","Qwen3VLChatHandler","Qwen25VLChatHandler","MiniCPMv46ChatHandler","MiniCPMv45ChatHandler","Gemma4ChatHandler","Gemma3ChatHandler","GLM41VChatHandler","NanoLlavaChatHandler","MoondreamChatHandler","LlavaImageChatHandler"):
             try:
                 import llama_cpp.llama_chat_format as fmt
                 h_cls = getattr(fmt, handler_name, None)
@@ -487,9 +486,7 @@ class AITEC_LLM_Vision:
                                               "tooltip": "Remove repetitions of <|im_start|>assistant～<|im_end|> and return only the first response (Gemma4, etc.)"}),
                 "suppress_thinking": ("BOOLEAN", {"default": False,
                                                    "tooltip": "When enabled, adds an inference suppression instruction to the system prompt (for Thinking models such as Qwen3 and Gemma4)"}),
-                "reset_kv_cache":    ("BOOLEAN", {"default": True,
-                                                   "tooltip": "Reset the KV cache before inference. Set to ON to prevent context exhaustion (recommended for reasoning models such as Qwen3). Set to OFF to retain conversation history."}),
-                "unload_after_run": ("BOOLEAN", {"default": False,
+                "unload_after_run": ("BOOLEAN", {"default": True,
                                                    "tooltip": "Unload the model after execution to free up VRAM. You will need to reload it when you run it again."}),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff,
                                  "control_after_generate": True,
@@ -516,31 +513,12 @@ class AITEC_LLM_Vision:
     def run(self, model: LLMModel, system_prompt: str, prompt: str,
             temperature: float, top_p: float, max_tokens: int,
             remove_think: bool, remove_chatml: bool, suppress_thinking: bool,
-            reset_kv_cache: bool = True, unload_after_run: bool = False, seed: int = 0,
+            unload_after_run: bool = True, seed: int = 0,
             image1=None, image2=None, image3=None, image4=None):
 
         try:
             if model.llm is None:
                 return ("", model.model_file, "error: The model has been unloaded. Please rerun the Loader.")
-
-            # Complete reset of the Vision model's context
-            # Because internal state such as `n_past` remains after image encoding via the chat_handler
-            # If you only call `reset()`, a “Fatal Decode Error at Pos 0” occurs
-            if reset_kv_cache:
-                try:
-                    llm = model.llm
-                    # Completely clear the KV cache using the llama_cpp internal API
-                    if hasattr(llm, '_ctx') and llm._ctx is not None:
-                        import llama_cpp.llama_cpp as _lib
-                        _lib.llama_kv_cache_clear(llm._ctx)
-                    # Reset n_tokens and n_past
-                    if hasattr(llm, 'n_tokens'):
-                        llm.n_tokens = 0
-                    if hasattr(llm, '_n_past'):
-                        llm._n_past = 0
-                    llm.reset()
-                except Exception as e:
-                    print(f"[AITEC_Vision] reset warning: {e}")
 
             messages = []
             final_system = _apply_nothink(system_prompt, suppress_thinking)
@@ -563,6 +541,7 @@ class AITEC_LLM_Vision:
                 temperature=float(temperature),
                 top_p=float(top_p),
                 max_tokens=int(max_tokens),
+                seed=int(seed),
             )
 
             text = (response["choices"][0]["message"]["content"] or "").strip()
