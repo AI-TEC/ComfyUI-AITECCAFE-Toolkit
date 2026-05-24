@@ -207,7 +207,6 @@ Supports up to 4 image inputs.
 *   **remove_think**: Remove `<think>` tags
 *   **remove_chatml**: Clean up ChatML tags
 *   **suppress_thinking**: Suppress reasoning
-*   **reset_kv_cache**: Reset the KV cache before inference when ON (each inference becomes independent and prevents context exhaustion)
 *   **unload_after_run**: When set to ON, the LLM model is unloaded after output (if you are referencing multiple deployments, see “How to unload LLM models” below)
 *   **seed**: Used to force execution even when the input image and prompt have not changed (same seed does not guarantee identical output)
 *   **control_after_generate**: Select anything other than fix to execute even when the input image and prompt have not changed
