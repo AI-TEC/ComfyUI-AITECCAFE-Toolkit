@@ -166,6 +166,7 @@ Loaderノードで読み込んだモデルを共有して使用するため、�
 *   **suppress_thinking**: 推論過程の出力抑制
 *   **reset_kv_cache**: ONで推論前にKVキャッシュをリセット(毎回独立した推論になり、コンテキスト枯渇を防ぐ)
 *   **unload_after_run**: ONで出力後にLLMモデルをアンロードします(複数配置参照する場合は、下部のLLMのモデルアンロード利用方法参照)
+*   **seed**: 入力画像とプロンプトに変化がなくても動作させるために使用します（同じseed値で出力が同じになるわけではありません）
 
 - **接続例**:[AITEC LLM Loader]        → MODEL → [AITEC LLM Chat] 
 <img src="https://github.com/AI-TEC/images/blob/main/0013.jpg" alt="Connection example AITEC LLM">
