@@ -9,10 +9,14 @@
 # Node structure:
 #   [AITEC LLM Loader]        → MODEL ──→ [AITEC LLM Chat]    → text
 #   [AITEC LLM Vision Loader] → MODEL ──→ [AITEC LLM Vision]  → text
+#
+#llama-cpp-python support:0.3.44
+#
 
 import gc
 import re
 import base64
+import inspect
 from io import BytesIO
 from pathlib import Path
 from typing import Optional
@@ -232,12 +236,20 @@ class AITEC_LLM_Loader:
             raise FileNotFoundError(f"Model not found: {model_path}")
 
         print(f"[AITEC_Loader] Loading model: {model_path.name}")
-        llm = Llama(
+
+        llama_kwargs = dict(
             model_path=str(model_path),
             n_ctx=n_ctx,
             n_gpu_layers=n_gpu_layers,
             verbose=False,
         )
+        try:
+            _sig = inspect.signature(Llama.__init__)
+            if "ctx_checkpoints" in _sig.parameters:
+                llama_kwargs["ctx_checkpoints"] = 0
+        except (TypeError, ValueError):
+            pass
+        llm = Llama(**llama_kwargs)
         wrapper = LLMModel(llm, model_file, has_vision=False)
         AITEC_LLM_Loader._cache[key] = wrapper
         print(f"[AITEC_Loader] Loading complete: {model_file}")
@@ -306,7 +318,30 @@ class AITEC_LLM_Vision_Loader:
 
         # Vision chat handler を探す
         chat_handler = None
-        for handler_name in ("MTMDChatHandler","Qwen3VLChatHandler","Qwen25VLChatHandler","MiniCPMv46ChatHandler","MiniCPMv45ChatHandler","Gemma4ChatHandler","Gemma3ChatHandler","GLM41VChatHandler","NanoLlavaChatHandler","MoondreamChatHandler","LlavaImageChatHandler"):
+        _VISION_HANDLER_ORDER = (
+            "Gemma4ChatHandler",
+            "Gemma3ChatHandler",
+            "Qwen3ASRChatHandler",
+            "Qwen3VLChatHandler",
+            "Qwen35ChatHandler",
+            "Qwen25VLChatHandler",
+            "GLM46VChatHandler",
+            "GLM41VChatHandler",
+            "MiniCPMv46ChatHandler",
+            "MiniCPMv45ChatHandler",
+            "MiniCPMv26ChatHandler",
+            "LFM25VLChatHandler",
+            "LFM2VLChatHandler",
+            "GraniteDoclingChatHandler",
+            "PaddleOCRChatHandler",
+            "Llama3VisionAlphaChatHandler",
+            "Llava16ChatHandler",
+            "Llava15ChatHandler",
+            "NanollavaChatHandler",
+            "MoondreamChatHandler",
+            "MTMDChatHandler"
+        )
+        for handler_name in _VISION_HANDLER_ORDER:
             try:
                 import llama_cpp.llama_chat_format as fmt
                 h_cls = getattr(fmt, handler_name, None)
@@ -325,13 +360,21 @@ class AITEC_LLM_Vision_Loader:
             )
 
         print(f"[AITEC_VisionLoader] Loading model: {model_path.name}")
-        llm = Llama(
+
+        llama_kwargs = dict(
             model_path=str(model_path),
             chat_handler=chat_handler,
             n_ctx=n_ctx,
             n_gpu_layers=n_gpu_layers,
             verbose=False,
         )
+        try:
+            _sig = inspect.signature(Llama.__init__)
+            if "ctx_checkpoints" in _sig.parameters:
+                llama_kwargs["ctx_checkpoints"] = 0
+        except (TypeError, ValueError):
+            pass
+        llm = Llama(**llama_kwargs)
         wrapper = LLMModel(llm, model_file, has_vision=True)
         AITEC_LLM_Vision_Loader._cache[key] = wrapper
         print(f"[AITEC_VisionLoader] Loading model: {model_file}")
@@ -376,6 +419,9 @@ class AITEC_LLM_Chat:
                                                    "tooltip": "Reset the KV cache before inference. Set to ON to prevent context exhaustion (recommended for reasoning models such as Qwen3). Set to OFF to retain conversation history."}),
                 "unload_after_run": ("BOOLEAN", {"default": False,
                                                    "tooltip": "Unload the model after execution to free up VRAM. You will need to reload it when you run it again."}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff,
+                                    "control_after_generate": True,
+                                    "tooltip": "Changing the value each time the code runs bypasses the cache and forces a re-execution."}),
             },
         }
 
@@ -386,14 +432,13 @@ class AITEC_LLM_Chat:
     CATEGORY = "AITEC/LocalLLM"
 
     @classmethod
-    def IS_CHANGED(cls, **kwargs):
-        # Always re-execute (since NaN is not equal to itself, the cache is invalidated)
-        return float("NaN")
+    def IS_CHANGED(cls, seed=0, **kwargs):
+        return seed
 
     def run(self, model: LLMModel, system_prompt: str, prompt: str,
             temperature: float, top_p: float, max_tokens: int,
             remove_think: bool, remove_chatml: bool, suppress_thinking: bool,
-            reset_kv_cache: bool = True, unload_after_run: bool = False):
+            reset_kv_cache: bool = True, unload_after_run: bool = False, seed: int = 0):
 
         if model.llm is None:
             return ("", model.model_file, "error: The model has been unloaded. Please rerun the Loader.")
@@ -422,6 +467,7 @@ class AITEC_LLM_Chat:
                 temperature=float(temperature),
                 top_p=float(top_p),
                 max_tokens=int(max_tokens),
+                seed=int(seed),
             )
 
             text = (response["choices"][0]["message"]["content"] or "").strip()
