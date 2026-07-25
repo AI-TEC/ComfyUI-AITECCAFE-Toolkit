@@ -167,6 +167,7 @@ Since the model loaded by the Loader node is shared, memory usage does not incre
 *   **suppress_thinking**: Suppress reasoning process output
 *   **reset_kv_cache**: Reset the KV cache before inference when ON (each inference becomes independent and prevents context exhaustion)
 *   **unload_after_run**: When set to ON, the LLM model is unloaded after output (if you are referencing multiple deployments, see “How to unload LLM models” below)
+*   **seed**: Used to force execution even when the input image and prompt have not changed (same seed does not guarantee identical output)
 
 - **Connection Example**: [AITEC LLM Loader] → MODEL → [AITEC LLM Chat]  
 <img src="https://github.com/AI-TEC/images/blob/main/0013.jpg" alt="Connection example AITEC LLM">
