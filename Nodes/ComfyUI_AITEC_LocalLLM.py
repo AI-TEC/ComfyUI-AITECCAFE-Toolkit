@@ -94,6 +94,20 @@ def _remove_chatml_tags(text: str) -> str:
     cleaned = re.sub(r"<\|im_end\|>", "", cleaned)
     return cleaned.strip()
 
+def _remove_channel_tags(text: str) -> str:
+    """
+    Remove the thought process (channel-format reasoning) enclosed in `<|channel|>...<|channel|>` tags,
+    such as those produced by Gemma 4.
+
+    Specifications:
+    - Remove all blocks enclosed in <|channel|> ... <|channel|> pairs.
+    - Also remove any unpaired, isolated <|channel|> tags, just to be safe.
+    """
+    cleaned = re.sub(r"<\|channel>.*?<channel\|>", "", text, flags=re.DOTALL)
+    cleaned = re.sub(r"<\|channel>", "", cleaned)
+    cleaned = re.sub(r"<channel\|>", "", cleaned)
+    return cleaned.strip()
+
 
 def _tensor_to_pil(tensor: torch.Tensor) -> Image.Image:
     t = tensor[0] if tensor.ndim == 4 else tensor
@@ -138,6 +152,7 @@ def _clean_output(text: str, remove_think: bool, remove_chatml: bool) -> str:
         text = _remove_chatml_tags(text)
     if remove_think:
         text = _remove_think_tags(text)
+        text = _remove_channel_tags(text)
     return text
 
 
