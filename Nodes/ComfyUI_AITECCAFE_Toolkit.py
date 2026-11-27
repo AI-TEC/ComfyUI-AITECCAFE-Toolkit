@@ -311,8 +311,8 @@ class AITEC_Image_Loader:
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("image", "mask")
+    RETURN_TYPES = ("IMAGE", "MASK", "STRING")
+    RETURN_NAMES = ("image", "mask", "filename")
     FUNCTION = "load_sequential_image"
     CATEGORY = "AITECCAFE-Toolkit"
 
@@ -351,12 +351,15 @@ class AITEC_Image_Loader:
         mask_np = np.array(mask).astype(np.float32) / 255.0
         mask_tensor = torch.from_numpy(mask_np)
 
+        # Original filename without extension
+        filename = os.path.splitext(os.path.basename(selected_image))[0]
+
         # Print to console
         print(f"Selected file: {os.path.relpath(selected_image, folder_path)} (Seed: {seed}, Index: {index})")
 
         # Increment seed for next execution
         return {
-            "result": (image_tensor, mask_tensor),
+            "result": (image_tensor, mask_tensor, filename),
             "hidden": {"seed": seed + 1}
         }
 
