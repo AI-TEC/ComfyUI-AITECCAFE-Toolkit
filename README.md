@@ -102,6 +102,7 @@ This node can load images from a specified folder.
 *   **folder_path**: Path to the folder containing the images to load
 *   **seed**: When set to increment, images in the folder can be loaded in filename order
 *   **include_subfolders**: Set whether to load images from subfolders
+*   **filename**:Output the filename without the extension
 
 ---
 
